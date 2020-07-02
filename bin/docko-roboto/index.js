@@ -3,7 +3,6 @@ const git = require("nodegit");
 const SSH = require("ssh2");
 const tar = require("tar-fs");
 const zlib = require("zlib");
-const yargs = require("yargs");
 const { exec } = require("child_process");
 const fs = require("fs-extra");
 const { URL } = require("url");
@@ -43,8 +42,19 @@ class DockoRoboto {
       this.cloneBB();
     }
 
-    if (argv._.includes("dock")) {
-      this.doDocker();
+    switch (argv.dock) {
+      case "all":
+        this.doDocker();
+        break;
+      case "php":
+        this.doPHP();
+        break;
+      case "mysql":
+        this.doMysql();
+        break;
+      case "composer":
+        this.doComposer();
+        break;
     }
   }
 
@@ -263,57 +273,81 @@ class DockoRoboto {
     };
   }
 
+  doNet() {
+    console.log(`- Creating network 。.:☆*:･'(*⌒―⌒*)))`);
+    exec("docker network create cw_net", (error, stdout, stderr) => {
+      if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+      }
+    });
+  }
+
+  doPHP() {
+    console.log(`- Running PHP Container <(￣︶￣)>`);
+    exec(
+      "docker-compose -f ../soho_docker/php/docker-compose.yaml up -d",
+      (error, stdout, stderr) => {
+        if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+        }
+      }
+    );
+  }
+
+  doMysql() {
+    console.log(`- Running Mysql Container (￣ω￣)`);
+    exec(
+      "docker-compose -f ../soho_docker/mysql/docker-compose.yaml up -d",
+      (error, stdout, stderr) => {
+        if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+        }
+      }
+    );
+  }
+
+  doWeb() {
+    console.log(`- Running Web Container <(￣︶￣)>`);
+    exec(
+      "docker-compose -f ../soho_docker/apache/docker-compose.yaml up -d",
+      (error, stdout, stderr) => {
+        if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+        }
+      }
+    );
+  }
+
+  doComposer() {
+    console.log(
+      `-- Building composer libs (this take a little while you can take a coffe (o˘◡˘o) ) (－ω－) zzZ`
+    );
+    exec(
+      "docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php php composer.phar install",
+      (error, stdout, stderr) => {
+        if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+        }
+        console.log(
+          `! ┌( ಠ_ಠ)┘ ! Nice work now you can see the project step 1 at this address: http://flowpanama.com/ ! Enjoy !`
+        );
+      }
+    );
+  }
+
   doDocker() {
     console.log(`☆*:.｡.o(≧▽≦)o.｡.:*☆ INIT`);
     console.log(`- - - - - - - - - - - - - - - `);
-    console.log(`- Creating network 。.:☆*:･'(*⌒―⌒*)))`);
-    exec("docker network create cw_net", (error, stdout, stderr) => {
-      console.log(`- Running PHP Container <(￣︶￣)>`);
-      exec(
-        "docker-compose -f ../soho_docker/php/docker-compose.yaml up -d --build",
-        (error, stdout, stderr) => {
-          if (error) {
-            console.log(`error: ${error.message}`);
-            return;
-          }
-          console.log(`- Running Mysql Container (￣ω￣)`);
-          exec(
-            "docker-compose -f ../soho_docker/mysql/docker-compose.yaml up -d --build",
-            (error, stdout, stderr) => {
-              if (error) {
-                console.log(`error: ${error.message}`);
-                return;
-              }
-              console.log(`- Running Web Container <(￣︶￣)>`);
-              exec(
-                "docker-compose -f ../soho_docker/apache/docker-compose.yaml up -d --build",
-                (error, stdout, stderr) => {
-                  if (error) {
-                    console.log(`error: ${error.message}`);
-                    return;
-                  }
-                  console.log(
-                    `-- Building composer libs (this take a little while you can take a coffe (o˘◡˘o) ) (－ω－) zzZ`
-                  );
-                  exec(
-                    "docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php php composer.phar install",
-                    (error, stdout, stderr) => {
-                      if (error) {
-                        console.log(`error: ${error.message}`);
-                        return;
-                      }
-                      console.log(
-                        `! ┌( ಠ_ಠ)┘ ! Nice work now you can see the project step 1 at this address: http://flowpanama.com/ ! Enjoy !`
-                      );
-                    }
-                  );
-                }
-              );
-            }
-          );
-        }
-      );
-    });
+    this.doNet();
+    this.doPHP();
+    this.doMysql();
+    this.doWeb();
+    this.doComposer();
   }
 
   /**
