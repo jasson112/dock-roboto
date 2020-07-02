@@ -286,7 +286,7 @@ class DockoRoboto {
   doPHP() {
     console.log(`- Running PHP Container <(￣︶￣)>`);
     exec(
-      "docker-compose -f ../soho_docker/php/docker-compose.yaml up -d",
+      "docker-compose -f ../soho_docker/php/docker-compose.yaml up -d --build",
       (error, stdout, stderr) => {
         if (error) {
           console.log(`error: ${error.message}`);
@@ -299,7 +299,7 @@ class DockoRoboto {
   doMysql() {
     console.log(`- Running Mysql Container (￣ω￣)`);
     exec(
-      "docker-compose -f ../soho_docker/mysql/docker-compose.yaml up -d",
+      "docker-compose -f ../soho_docker/mysql/docker-compose.yaml up -d --build",
       (error, stdout, stderr) => {
         if (error) {
           console.log(`error: ${error.message}`);
@@ -312,7 +312,7 @@ class DockoRoboto {
   doWeb() {
     console.log(`- Running Web Container <(￣︶￣)>`);
     exec(
-      "docker-compose -f ../soho_docker/apache/docker-compose.yaml up -d",
+      "docker-compose -f ../soho_docker/apache/docker-compose.yaml up -d --build",
       (error, stdout, stderr) => {
         if (error) {
           console.log(`error: ${error.message}`);
