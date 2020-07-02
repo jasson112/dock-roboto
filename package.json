@@ -2,7 +2,8 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "init": "docko-roboto",
+    "init": "docko-roboto clone",
+    "dock": "docko-roboto dock",
     "pattern-panama": "cd ./flowbusiness_co/sites/negocios.masmovilpanama.com/themes/custom/flowbusiness && yarn && yarn run start",
     "pattern-bb": "cd ./flowbusiness_co/sites/flowbusiness.co.barbados/themes/custom/flowbusiness && yarn && yarn run start"
   },
