@@ -36,10 +36,22 @@ class DockoRoboto {
       this.PASS +
       "@bssstash.corp-it.cc:7990/scm/fb/sites_masmovilpanama_negocios.git";
     this.CLONE_DIR = "./flowbusiness_co";
-    if (argv._.includes("clone")) {
-      this.cloneMain();
-      this.clonePanama();
-      this.cloneBB();
+
+    switch (argv.clone) {
+      case "all":
+        this.cloneMain();
+        this.clonePanama();
+        this.cloneBB();
+        break;
+      case "main":
+        this.cloneMain();
+        break;
+      case "panama":
+        this.clonePanama();
+        break;
+      case "bb":
+        this.cloneBB();
+        break;
     }
 
     switch (argv.dock) {

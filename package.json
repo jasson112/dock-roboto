@@ -2,7 +2,7 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "init": "docko-roboto clone",
+    "init": "docko-roboto --clone=all",
     "dock": "docko-roboto --dock=all",
     "dock-php": "docko-roboto --dock=php",
     "dock-mysql": "docko-roboto --dock=mysql",
