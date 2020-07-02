@@ -161,9 +161,10 @@ class DockoRoboto {
 
   clonePanama() {
     async () => {
+      await fs.emptyDir(this.CLONE_DIR + "/sites/negocios.masmovilpanama.com");
       await git.Clone.clone(
-        REPO_BARBADOS,
-        CLONE_DIR + "/sites/negocios.masmovilpanama.com",
+        this.REPO_PANAMA,
+        this.CLONE_DIR + "/sites/negocios.masmovilpanama.com",
         {
           fetchOpts: {
             callbacks: {
