@@ -172,7 +172,9 @@ class DockoRoboto {
   }
 
   clonePanama() {
-    async () => {
+    const my_this = this;
+    (async () => {
+      console.log("CLONING PANAMA THEME");
       await fs.emptyDir(this.CLONE_DIR + "/sites/negocios.masmovilpanama.com");
       await git.Clone.clone(
         this.REPO_PANAMA,
@@ -201,9 +203,10 @@ class DockoRoboto {
           },
         }
       ).then(function (repository) {
-        const localDir = CLONE_DIR + "/sites/negocios.masmovilpanama.com/";
+        const localDir =
+          my_this.CLONE_DIR + "/sites/negocios.masmovilpanama.com/";
         // Work with the repository object here.
-        copyPanamaSettings(localDir);
+        my_this.copyPanamaSettings(localDir);
         if (!fs.existsSync(localDir + "files/")) {
           fs.mkdirSync(localDir + "files/");
         }
@@ -215,13 +218,13 @@ class DockoRoboto {
           // The port, usually 22
           port: 22,
           // Credentials
-          username: USER_SSH,
-          password: PASS_SSH,
+          username: my_this.USER_SSH,
+          password: my_this.PASS_SSH,
         };
         conn
           .on("ready", function () {
             // Use the transfer directory
-            transferDirectory(
+            my_this.transferDirectory(
               // The SSH2 connection
               conn,
               // The remote folder of your unix server that you want to back up
@@ -245,7 +248,7 @@ class DockoRoboto {
           })
           .connect(connectionSettings);
       });
-    };
+    })();
   }
 
   cloneBB() {
