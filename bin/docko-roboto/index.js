@@ -116,7 +116,7 @@ class DockoRoboto {
 
   copyPanamaSettings(localDir) {
     fs.copyFile(
-      "./drupal-source/barbados/settings.php",
+      "./drupal-source/panama/settings.php",
       localDir + "settings.php",
       (err) => {
         if (err) throw err;
