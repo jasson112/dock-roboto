@@ -296,7 +296,7 @@ class DockoRoboto {
                     `-- Building composer libs (this take a little while you can take a coffe (o˘◡˘o) ) (－ω－) zzZ`
                   );
                   exec(
-                    "docker-compose -f -rm ../soho_docker/php/docker-compose.yaml run cw-php php composer.phar install",
+                    "docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php php composer.phar install",
                     (error, stdout, stderr) => {
                       if (error) {
                         console.log(`error: ${error.message}`);
