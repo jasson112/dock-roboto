@@ -7,6 +7,7 @@
     "dock-php": "docko-roboto --dock=php",
     "dock-mysql": "docko-roboto --dock=mysql",
     "dock-web": "docko-roboto --dock=web",
+    "dock-copy": "docko-roboto --copy=all",
     "composer": "docko-roboto --dock=composer",
     "pattern-panama": "cd ./flowbusiness_co/sites/negocios.masmovilpanama.com/themes/custom/flowbusiness && yarn && yarn run start",
     "pattern-bb": "cd ./flowbusiness_co/sites/flowbusiness.co.barbados/themes/custom/flowbusiness && yarn && yarn run start"

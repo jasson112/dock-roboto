@@ -56,6 +56,19 @@ class DockoRoboto {
         this.doComposer();
         break;
     }
+
+    switch (argv.copy) {
+      case "all":
+        this.copyPanamaSettings();
+        this.copyBBSettings();
+        break;
+      case "panama":
+        this.copyPanamaSettings();
+        break;
+      case "bb":
+        this.copyBBSettings();
+        break;
+    }
   }
 
   cloneMain() {
@@ -89,6 +102,44 @@ class DockoRoboto {
     };
   }
 
+  copyPanamaSettings(localDir) {
+    fs.copyFile(
+      "./drupal-source/barbados/settings.php",
+      localDir + "settings.php",
+      (err) => {
+        if (err) throw err;
+        console.log("DOne copy settings.php");
+      }
+    );
+    fs.copyFile(
+      "./drupal-source/services.yml",
+      localDir + "services.yml",
+      (err) => {
+        if (err) throw err;
+        console.log("DOne copy servikces.yml");
+      }
+    );
+  }
+
+  copyBBSettings(localDir) {
+    fs.copyFile(
+      "./drupal-source/barbados/settings.php",
+      localDir + "settings.php",
+      (err) => {
+        if (err) throw err;
+        console.log("DOne copy settings.php");
+      }
+    );
+    fs.copyFile(
+      "./drupal-source/services.yml",
+      localDir + "services.yml",
+      (err) => {
+        if (err) throw err;
+        console.log("DOne copy servikces.yml");
+      }
+    );
+  }
+
   clonePanama() {
     async () => {
       await git.Clone.clone(
@@ -120,23 +171,7 @@ class DockoRoboto {
       ).then(function (repository) {
         const localDir = CLONE_DIR + "/sites/negocios.masmovilpanama.com/";
         // Work with the repository object here.
-        fs.copyFile(
-          "./drupal-source/barbados/settings.php",
-          localDir + "settings.php",
-          (err) => {
-            if (err) throw err;
-            console.log("DOne copy settings.php");
-          }
-        );
-        fs.copyFile(
-          "./drupal-source/services.yml",
-          localDir + "services.yml",
-          (err) => {
-            if (err) throw err;
-            console.log("DOne copy servikces.yml");
-          }
-        );
-
+        copyPanamaSettings(localDir);
         if (!fs.existsSync(localDir + "files/")) {
           fs.mkdirSync(localDir + "files/");
         }
@@ -213,22 +248,7 @@ class DockoRoboto {
       ).then(function (repository) {
         const localDir = CLONE_DIR + "/sites/flowbusiness.co.barbados/";
         // Work with the repository object here.
-        fs.copyFile(
-          "./drupal-source/barbados/settings.php",
-          localDir + "settings.php",
-          (err) => {
-            if (err) throw err;
-            console.log("DOne copy settings.php");
-          }
-        );
-        fs.copyFile(
-          "./drupal-source/services.yml",
-          localDir + "services.yml",
-          (err) => {
-            if (err) throw err;
-            console.log("DOne copy servikces.yml");
-          }
-        );
+        this.copyBBSettings(localDir);
         if (!fs.existsSync(localDir + "files/")) {
           fs.mkdirSync(localDir + "files/");
         }
