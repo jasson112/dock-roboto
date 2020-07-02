@@ -8,15 +8,16 @@ const { exec } = require("child_process");
 const fs = require("fs-extra");
 const { URL } = require("url");
 const argv = require("yargs").argv;
+require("custom-env").env();
 
 class DockoRoboto {
   constructor() {
     console.log("NODE INIT");
     //NODE 8 IMPLEMENTATION
-    this.USER = "jeyson%40sohoux.co";
-    this.PASS = "..Punkino142";
-    this.USER_SSH = "a-jeyson.rojas";
-    this.PASS_SSH = "3vt7cb*fyu7j+hFw5";
+    this.USER = process.env.GIT_USER;
+    this.PASS = process.env.GIT_PASS;
+    this.USER_SSH = process.env.SSH_USER;
+    this.PASS_SSH = process.env.SSH_PASS;
     this.REPO_URL =
       "http://" +
       this.USER +
@@ -285,7 +286,7 @@ class DockoRoboto {
               }
               console.log(`- Running Web Container <(￣︶￣)>`);
               exec(
-                "docker-compose -f ./apache/docker-compose.yaml up -d --build",
+                "docker-compose -f ./soho_docker/apache/docker-compose.yaml up -d --build",
                 (error, stdout, stderr) => {
                   if (error) {
                     console.log(`error: ${error.message}`);

@@ -35,3 +35,13 @@ run these commands to enjoy the magic:
   ```
    yarn run pattern-bb
   ```
+
+4. .evn file example:
+
+````
+GIT_USER=""
+GIT_PASS=""
+SSH_USER=""
+SSH_PASS=""
+```
+````
