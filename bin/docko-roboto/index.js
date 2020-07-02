@@ -59,18 +59,22 @@ class DockoRoboto {
 
     switch (argv.copy) {
       case "all":
-        this.copyPanamaSettings();
-        this.copyBBSettings();
-        this.copySitesSettings();
+        this.copyPanamaSettings(
+          CLONE_DIR + "/sites/negocios.masmovilpanama.com/"
+        );
+        this.copyBBSettings(CLONE_DIR + "/sites/flowbusiness.co.barbados/");
+        this.copySitesSettings(CLONE_DIR + "/sites/");
         break;
       case "panama":
-        this.copyPanamaSettings();
+        this.copyPanamaSettings(
+          CLONE_DIR + "/sites/negocios.masmovilpanama.com/"
+        );
         break;
       case "bb":
-        this.copyBBSettings();
+        this.copyBBSettings(CLONE_DIR + "/sites/flowbusiness.co.barbados/");
         break;
       case "sites":
-        this.copySitesSettings();
+        this.copySitesSettings(CLONE_DIR + "/sites/");
         break;
     }
   }
