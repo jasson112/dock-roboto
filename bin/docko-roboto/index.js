@@ -61,12 +61,16 @@ class DockoRoboto {
       case "all":
         this.copyPanamaSettings();
         this.copyBBSettings();
+        this.copySitesSettings();
         break;
       case "panama":
         this.copyPanamaSettings();
         break;
       case "bb":
         this.copyBBSettings();
+        break;
+      case "sites":
+        this.copySitesSettings();
         break;
     }
   }
@@ -119,6 +123,13 @@ class DockoRoboto {
         console.log("DOne copy servikces.yml");
       }
     );
+  }
+
+  copySitesSettings(localDir) {
+    fs.copyFile("./drupal-source/sites.php", localDir + "sites.php", (err) => {
+      if (err) throw err;
+      console.log("DOne copy sites.php");
+    });
   }
 
   copyBBSettings(localDir) {
