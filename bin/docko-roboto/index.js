@@ -286,7 +286,7 @@ class DockoRoboto {
               }
               console.log(`- Running Web Container <(￣︶￣)>`);
               exec(
-                "docker-compose -f ./soho_docker/apache/docker-compose.yaml up -d --build",
+                "docker-compose -f ../soho_docker/apache/docker-compose.yaml up -d --build",
                 (error, stdout, stderr) => {
                   if (error) {
                     console.log(`error: ${error.message}`);
