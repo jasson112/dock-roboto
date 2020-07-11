@@ -777,7 +777,7 @@ $settings['entity_update_backup'] = TRUE;
  *
  * Keep this code block at the end of this file to take full effect.
  */
-$settings ["cache"] ["bins"] ["render"] = "cache.backend.null";
+//$settings ["cache"] ["bins"] ["render"] = "cache.backend.null";
 #
 if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
   include $app_root . '/' . $site_path . '/settings.local.php';

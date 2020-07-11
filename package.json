@@ -3,6 +3,8 @@
   "private": true,
   "scripts": {
     "init": "docko-roboto --clone=all",
+    "clone-net": "docko-roboto --clone=net",
+    "clone-bus": "docko-roboto --clone=bus",
     "dock": "docko-roboto --dock=all",
     "dock-php": "docko-roboto --dock=php",
     "dock-mysql": "docko-roboto --dock=mysql",
