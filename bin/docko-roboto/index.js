@@ -10,6 +10,7 @@ const argv = require("yargs").argv;
 require("custom-env").env();
 const ora = require("ora");
 const spinner = ora("Docko Roboto").start();
+const spawn = require("child_process").spawn;
 
 class DockoRoboto {
   constructor() {
@@ -143,6 +144,19 @@ class DockoRoboto {
         spinner.text = "Copy busniess site settings";
         this.copyBusinessSettings(this.CLONE_DIR.bus + "/", function () {
           spinner.succeed("Bussines Copy files DONE !");
+        });
+        break;
+    }
+
+    switch (argv.sqlimport) {
+      case "panama":
+        break;
+    }
+
+    switch (argv.sqlexport) {
+      case "panama":
+        this.doMysqlExport("negocios_masmovilpanama_com", "c_", function () {
+          spinner.succeed("Export Done !");
         });
         break;
     }
@@ -543,6 +557,27 @@ class DockoRoboto {
           console.log(`error: ${error.message}`);
           return;
         }
+      }
+    );
+  }
+
+  doMysqlExport(db, prefix, callback) {
+    spinner.info(`- Running export in Mysql Container (￣ω￣)`);
+    //IMPORT
+    //cat backup.sql | docker exec -i CONTAINER /usr/bin/mysql -u root --password=root DATABASE
+    exec(
+      "docker exec -i cw-mysql mysqldump -uroot -proot --databases " +
+        db +
+        " > ../soho_docker/mysql/dump/" +
+        prefix +
+        db +
+        ".sql",
+      (error, stdout, stderr) => {
+        if (error) {
+          spinner.fail(`error: ${error.message}`);
+          return;
+        }
+        callback();
       }
     );
   }
