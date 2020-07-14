@@ -150,6 +150,9 @@ class DockoRoboto {
 
     switch (argv.sqlimport) {
       case "panama":
+        this.doMysqlImport("negocios_masmovilpanama_com", "c_", function () {
+          spinner.succeed("Import Done !");
+        });
         break;
     }
 
@@ -572,6 +575,26 @@ class DockoRoboto {
         prefix +
         db +
         ".sql",
+      (error, stdout, stderr) => {
+        if (error) {
+          spinner.fail(`error: ${error.message}`);
+          return;
+        }
+        callback();
+      }
+    );
+  }
+
+  doMysqlImport(db, prefix, callback) {
+    spinner.info(`- Running import in Mysql Container (￣ω￣)`);
+    //IMPORT
+    //cat backup.sql | docker exec -i CONTAINER /usr/bin/mysql -u root --password=root DATABASE
+    exec(
+      "cat ../soho_docker/mysql/dump/" +
+        prefix +
+        db +
+        ".sql | docker exec -i cw-mysql /usr/bin/mysql -u root --password=root " +
+        db,
       (error, stdout, stderr) => {
         if (error) {
           spinner.fail(`error: ${error.message}`);

@@ -10,6 +10,8 @@
     "dock-mysql": "docko-roboto --dock=mysql",
     "dock-web": "docko-roboto --dock=web",
     "dock-copy": "docko-roboto --copy=all",
+    "exp-panama": "docko-roboto --sqlexport=panama ",
+    "imp-panama": "docko-roboto --sqlimport=panama ",
     "composer": "docko-roboto --dock=composer",
     "pattern-panama": "cd ./flowbusiness_co/sites/negocios.masmovilpanama.com/themes/custom/masmovil && yarn && yarn run start",
     "pattern-bb": "cd ./flowbusiness_co/sites/flowbusiness.co.barbados/themes/custom/flowbusiness && yarn && yarn run start"
