@@ -114,6 +114,11 @@ class DockoRoboto {
           spinner.succeed("Download succesfully");
         });
         break;
+      case "panama":
+        this.downloadMediaPanama(function () {
+          spinner.succeed("Download succesfully");
+        });
+        break;
     }
 
     switch (argv.copy) {
@@ -286,6 +291,58 @@ class DockoRoboto {
     })();
   }
 
+  downloadMediaPanama(callback) {
+    const my_this = this;
+    const my_callback = callback;
+    spinner.text = "Download bussines media";
+    const localDir =
+      my_this.CLONE_DIR.flow + "/sites/negocios.masmovilpanama.com/";
+    // Work with the repository object here.
+    my_this.copyPanamaSettings(localDir);
+    if (!fs.existsSync(localDir + "files/")) {
+      fs.mkdirSync(localDir + "files/");
+    }
+    fs.emptyDir(localDir + "files/");
+    var conn = new SSH();
+    var connectionSettings = {
+      // The host URL
+      host: "10.255.229.14",
+      // The port, usually 22
+      port: 22,
+      // Credentials
+      username: my_this.USER_SSH,
+      password: my_this.PASS_SSH,
+    };
+    conn
+      .on("ready", function () {
+        // Use the transfer directory
+        my_this.transferDirectory(
+          // The SSH2 connection
+          conn,
+          // The remote folder of your unix server that you want to back up
+          "/var/www/html/flowbusiness.co/sites/negocios.masmovilpanama.com/files",
+          // Local path where the files should be saved
+          localDir,
+          // Define a compression value (true for default 6) with a numerical value
+          true,
+          // A callback executed once the transference finishes
+          function (err) {
+            if (err) {
+              throw err;
+            }
+
+            spinner.info("Remote directory succesfully downloaded!");
+
+            // Finish the connection
+            conn.end();
+            my_callback();
+          },
+          "files"
+        );
+      })
+      .connect(connectionSettings);
+  }
+
   downloadMediaBusiness(callback) {
     const my_this = this;
     const my_callback = callback;
@@ -396,53 +453,7 @@ class DockoRoboto {
             },
           },
         }
-      ).then(function (repository) {
-        const localDir =
-          my_this.CLONE_DIR.flow + "/sites/negocios.masmovilpanama.com/";
-        // Work with the repository object here.
-        my_this.copyPanamaSettings(localDir);
-        if (!fs.existsSync(localDir + "files/")) {
-          fs.mkdirSync(localDir + "files/");
-        }
-        fs.emptyDir(localDir + "files/");
-        var conn = new SSH();
-        var connectionSettings = {
-          // The host URL
-          host: "10.255.229.14",
-          // The port, usually 22
-          port: 22,
-          // Credentials
-          username: my_this.USER_SSH,
-          password: my_this.PASS_SSH,
-        };
-        conn
-          .on("ready", function () {
-            // Use the transfer directory
-            my_this.transferDirectory(
-              // The SSH2 connection
-              conn,
-              // The remote folder of your unix server that you want to back up
-              "/var/www/html/flowbusiness.co/sites/negocios.masmovilpanama.com/files",
-              // Local path where the files should be saved
-              localDir,
-              // Define a compression value (true for default 6) with a numerical value
-              true,
-              // A callback executed once the transference finishes
-              function (err) {
-                if (err) {
-                  throw err;
-                }
-
-                console.log("Remote directory succesfully downloaded!");
-
-                // Finish the connection
-                conn.end();
-              },
-              "files"
-            );
-          })
-          .connect(connectionSettings);
-      });
+      ).then(function (repository) {});
     })();
   }
 
