@@ -11,6 +11,7 @@ require("custom-env").env();
 const ora = require("ora");
 const spinner = ora("Docko Roboto").start();
 const spawn = require("child_process").spawn;
+var unzip = require('unzip');
 
 class DockoRoboto {
   constructor() {
@@ -174,9 +175,9 @@ class DockoRoboto {
     let authAttempted = false;
     spinner.color = "blue";
     spinner.text = "CLONING MAIN";
-    async () => {
-      await fs.emptyDir(CLONE_DIR.flow);
-      await git.Clone.clone(this.REPOS.flow.main, CLONE_DIR.flow, {
+    (async () => {
+      await fs.emptyDir(this.CLONE_DIR.flow);
+      await git.Clone.clone(this.REPOS.flow.main, this.CLONE_DIR.flow, {
         fetchOpts: {
           callbacks: {
             transferProgress: function (progress) {
@@ -200,7 +201,7 @@ class DockoRoboto {
         // Work with the repository object here.
         spinner.prefixText = "DONE CLONING";
       });
-    };
+    })();
   }
 
   copyPanamaSettings(localDir) {
@@ -438,7 +439,8 @@ class DockoRoboto {
                   (100 *
                     (progress.receivedObjects() + progress.indexedObjects())) /
                   (progress.totalObjects() * 2);
-                console.log("CLONING %", percentaje.toFixed(2));
+                  spinner.color = "green";
+                  spinner.text = "CLONING %" + percentaje.toFixed(2);
               },
               certificateCheck: () => 1,
               credentials: (url, username) => {
@@ -453,7 +455,9 @@ class DockoRoboto {
             },
           },
         }
-      ).then(function (repository) {});
+      ).then(function (repository) {
+        spinner.text = "DONE CLONING %100";
+      });
     })();
   }
 
@@ -537,7 +541,7 @@ class DockoRoboto {
     };
   }
 
-  doNet() {
+  doNet(callback) {
     spinner.info(`- Creating network 。.:☆*:･'(*⌒―⌒*)))`);
     exec("docker network create cw_net", (error, stdout, stderr) => {
       if (error) {
@@ -631,9 +635,7 @@ class DockoRoboto {
   }
 
   doComposer() {
-    console.log(
-      `-- Building composer libs (this take a little while you can take a coffe (o˘◡˘o) ) (－ω－) zzZ`
-    );
+    spinner.info(`-- Building composer libs (this take a little while you can take a coffe (o˘◡˘o) ) (－ω－) zzZ`);
     exec(
       "docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php php composer.phar install",
       (error, stdout, stderr) => {
@@ -654,7 +656,9 @@ class DockoRoboto {
     this.doNet();
     this.doPHP();
     this.doMysql();
-    this.doWeb();
+    this.doWeb(function () {
+      spinner.succeed("Dock web running succesfully");
+    });
     this.doComposer();
   }
 
