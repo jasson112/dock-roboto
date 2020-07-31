@@ -637,6 +637,8 @@ class DockoRoboto {
   doComposer() {
     spinner.info(`-- Building composer libs (this take a little while you can take a coffe (o˘◡˘o) ) (－ω－) zzZ`);
     exec(
+      //flowbusiness_co/sites/negocios.masmovilpanama.com/themes/custom/masmovil
+      //docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php php composer.phar install -d sites/negocios.masmovilpanama.com/themes/custom/masmovil/pattern-lab
       "docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php php composer.phar install",
       (error, stdout, stderr) => {
         if (error) {
