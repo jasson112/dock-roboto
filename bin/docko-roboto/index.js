@@ -681,13 +681,15 @@ class DockoRoboto {
   }
 
   doNet(callback) {
+    const my_this = this;
+    const my_callback = callback;
     spinner.info(`- Creating network 。.:☆*:･'(*⌒―⌒*)))`);
     exec("docker network create cw_net", (error, stdout, stderr) => {
       if (error) {
         console.log(`error: ${error.message}`);
         return;
       }
-      callback();
+      my_callback();
     });
   }
 
