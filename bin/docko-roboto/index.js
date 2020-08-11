@@ -179,7 +179,7 @@ class DockoRoboto {
         });
         break;
       case "trinidad":
-        this.doMysqlImport("flowbusiness_tt", "d_", function () {
+        this.doMysqlImport("flowbusiness_tt", "e_", function () {
           spinner.succeed("Import Done !");
         });
         break;
@@ -192,7 +192,7 @@ class DockoRoboto {
         });
         break;
       case "trinidad":
-        this.doMysqlExport("flowbusiness_tt", "d_", function () {
+        this.doMysqlExport("flowbusiness_tt", "e_", function () {
           spinner.succeed("Export Done !");
         });
         break;
