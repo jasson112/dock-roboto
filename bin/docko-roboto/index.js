@@ -11,7 +11,7 @@ require("custom-env").env();
 const ora = require("ora");
 const spinner = ora("Docko Roboto").start();
 const spawn = require("child_process").spawn;
-var unzip = require('unzip');
+var unzip = require("unzip");
 
 class DockoRoboto {
   constructor() {
@@ -42,6 +42,12 @@ class DockoRoboto {
           ":" +
           this.PASS +
           "@bssstash.corp-it.cc:7990/scm/fb/sites_masmovilpanama_negocios.git",
+        trinidad:
+          "http://" +
+          this.USER +
+          ":" +
+          this.PASS +
+          "@bssstash.corp-it.cc:7990/scm/fb/sites_flowbusiness_tt.git",
       },
       cw: {
         net:
@@ -69,6 +75,7 @@ class DockoRoboto {
         this.cloneMain();
         this.clonePanama();
         this.cloneBB();
+        this.cloneTrinidad();
         break;
       case "main":
         this.cloneMain();
@@ -84,6 +91,9 @@ class DockoRoboto {
         break;
       case "bus":
         this.cloneBusiness();
+        break;
+      case "trinidad":
+        this.cloneTrinidad();
         break;
     }
 
@@ -130,11 +140,19 @@ class DockoRoboto {
         this.copyBBSettings(
           this.CLONE_DIR.flow + "/sites/flowbusiness.co.barbados/"
         );
+        this.copyTrinidadSettings(
+          this.CLONE_DIR.flow + "/sites/flowbusiness.co.trinidad/"
+        );
         this.copySitesSettings(this.CLONE_DIR.flow + "/sites/");
         break;
       case "panama":
         this.copyPanamaSettings(
           this.CLONE_DIR.flow + "/sites/negocios.masmovilpanama.com/"
+        );
+        break;
+      case "trinidad":
+        this.copyTrinidadSettings(
+          this.CLONE_DIR.flow + "/sites/flowbusiness.co.trinidad/"
         );
         break;
       case "bb":
@@ -160,11 +178,21 @@ class DockoRoboto {
           spinner.succeed("Import Done !");
         });
         break;
+      case "trinidad":
+        this.doMysqlImport("flowbusiness_tt", "d_", function () {
+          spinner.succeed("Import Done !");
+        });
+        break;
     }
 
     switch (argv.sqlexport) {
       case "panama":
         this.doMysqlExport("negocios_masmovilpanama_com", "c_", function () {
+          spinner.succeed("Export Done !");
+        });
+        break;
+      case "trinidad":
+        this.doMysqlExport("flowbusiness_tt", "d_", function () {
           spinner.succeed("Export Done !");
         });
         break;
@@ -207,6 +235,25 @@ class DockoRoboto {
   copyPanamaSettings(localDir) {
     fs.copyFile(
       "./drupal-source/panama/settings.php",
+      localDir + "settings.php",
+      (err) => {
+        if (err) throw err;
+        console.log("DOne copy settings.php");
+      }
+    );
+    fs.copyFile(
+      "./drupal-source/services.yml",
+      localDir + "services.yml",
+      (err) => {
+        if (err) throw err;
+        console.log("DOne copy servikces.yml");
+      }
+    );
+  }
+
+  copyTrinidadSettings(localDir) {
+    fs.copyFile(
+      "./drupal-source/trinidad/settings.php",
       localDir + "settings.php",
       (err) => {
         if (err) throw err;
@@ -344,6 +391,58 @@ class DockoRoboto {
       .connect(connectionSettings);
   }
 
+  downloadMediaTrinidad(callback) {
+    const my_this = this;
+    const my_callback = callback;
+    spinner.text = "Download trinidad media";
+    const localDir =
+      my_this.CLONE_DIR.flow + "/sites/flowbusiness.co.trinidad/";
+    // Work with the repository object here.
+    my_this.copyTrinidadSettings(localDir);
+    if (!fs.existsSync(localDir + "files/")) {
+      fs.mkdirSync(localDir + "files/");
+    }
+    fs.emptyDir(localDir + "files/");
+    var conn = new SSH();
+    var connectionSettings = {
+      // The host URL
+      host: "10.255.229.14",
+      // The port, usually 22
+      port: 22,
+      // Credentials
+      username: my_this.USER_SSH,
+      password: my_this.PASS_SSH,
+    };
+    conn
+      .on("ready", function () {
+        // Use the transfer directory
+        my_this.transferDirectory(
+          // The SSH2 connection
+          conn,
+          // The remote folder of your unix server that you want to back up
+          "/var/www/html/flowbusiness.co/sites/flowbusiness.co.trinidad/files",
+          // Local path where the files should be saved
+          localDir,
+          // Define a compression value (true for default 6) with a numerical value
+          true,
+          // A callback executed once the transference finishes
+          function (err) {
+            if (err) {
+              throw err;
+            }
+
+            spinner.info("Remote directory succesfully downloaded!");
+
+            // Finish the connection
+            conn.end();
+            my_callback();
+          },
+          "files"
+        );
+      })
+      .connect(connectionSettings);
+  }
+
   downloadMediaBusiness(callback) {
     const my_this = this;
     const my_callback = callback;
@@ -439,8 +538,48 @@ class DockoRoboto {
                   (100 *
                     (progress.receivedObjects() + progress.indexedObjects())) /
                   (progress.totalObjects() * 2);
-                  spinner.color = "green";
-                  spinner.text = "CLONING %" + percentaje.toFixed(2);
+                spinner.color = "green";
+                spinner.text = "CLONING %" + percentaje.toFixed(2);
+              },
+              certificateCheck: () => 1,
+              credentials: (url, username) => {
+                if (authAttempted) return git.Cred.defaultNew();
+                authAttempted = true;
+                url = new URL(url);
+                return git.Cred.userpassPlaintextNew(
+                  url.username,
+                  url.password
+                );
+              },
+            },
+          },
+        }
+      ).then(function (repository) {
+        spinner.text = "DONE CLONING %100";
+      });
+    })();
+  }
+
+  cloneTrinidad() {
+    const my_this = this;
+    (async () => {
+      console.log("CLONING TRINIDAD THEME");
+      await fs.emptyDir(
+        this.CLONE_DIR.flow + "/sites/flowbusiness.co.trinidad"
+      );
+      await git.Clone.clone(
+        this.REPOS.flow.trinidad,
+        this.CLONE_DIR.flow + "/sites/flowbusiness.co.trinidad",
+        {
+          fetchOpts: {
+            callbacks: {
+              transferProgress: function (progress) {
+                const percentaje =
+                  (100 *
+                    (progress.receivedObjects() + progress.indexedObjects())) /
+                  (progress.totalObjects() * 2);
+                spinner.color = "green";
+                spinner.text = "CLONING %" + percentaje.toFixed(2);
               },
               certificateCheck: () => 1,
               credentials: (url, username) => {
@@ -635,7 +774,9 @@ class DockoRoboto {
   }
 
   doComposer() {
-    spinner.info(`-- Building composer libs (this take a little while you can take a coffe (o˘◡˘o) ) (－ω－) zzZ`);
+    spinner.info(
+      `-- Building composer libs (this take a little while you can take a coffe (o˘◡˘o) ) (－ω－) zzZ`
+    );
     exec(
       //flowbusiness_co/sites/negocios.masmovilpanama.com/themes/custom/masmovil
       //docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php php composer.phar install -d sites/negocios.masmovilpanama.com/themes/custom/masmovil/pattern-lab
