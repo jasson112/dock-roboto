@@ -183,6 +183,11 @@ class DockoRoboto {
           spinner.succeed("Import Done !");
         });
         break;
+      case "bus":
+        this.doMysqlImport("cwcbusin_wp", "d_", function () {
+          spinner.succeed("Import Done !");
+        });
+        break;
     }
 
     switch (argv.sqlexport) {
