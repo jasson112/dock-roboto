@@ -6,3 +6,6 @@ flowbusiness_co
 cwnetworks.com
 cwbusiness.com
 .DS_Store
+venv
+__pycache__
+roboto.egg-info
