@@ -9,3 +9,5 @@ cwbusiness.com
 venv
 __pycache__
 roboto.egg-info
+.vscode
+mediatest
