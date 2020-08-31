@@ -6,6 +6,20 @@
 - Yarn
 - Docker desktop with sared drive in location on the this repo is cloned
 
+# USAGE PY
+
+1. creating virtual environment
+
+   ```
+   python3 -m venv venv/
+   ```
+2. activating virtual environment
+
+   ```
+   source venv/bin/activate
+   ```
+
+
 # USAGE
 
 run these commands to enjoy the magic:
