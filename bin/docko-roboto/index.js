@@ -97,6 +97,12 @@ class DockoRoboto {
         break;
     }
 
+    switch (argv.flush) {
+      case "panama":
+        this.flush()
+        break;
+    }
+
     switch (argv.dock) {
       case "all":
         this.doDocker();
@@ -788,6 +794,26 @@ class DockoRoboto {
       //flowbusiness_co/sites/negocios.masmovilpanama.com/themes/custom/masmovil
       //docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php php composer.phar install -d sites/negocios.masmovilpanama.com/themes/custom/masmovil/pattern-lab
       "docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php php composer.phar install",
+      (error, stdout, stderr) => {
+        if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+        }
+        console.log(
+          `! ┌( ಠ_ಠ)┘ ! Nice work now you can see the project step 1 at this address: http://flowpanama.com/ ! Enjoy !`
+        );
+      }
+    );
+  }
+
+  flush() {
+    spinner.info(
+      `-- FLUSHING CACHE (o˘◡˘o) ) (－ω－) zzZ`
+    );
+    exec(
+      //flowbusiness_co/sites/negocios.masmovilpanama.com/themes/custom/masmovil
+      //docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php php composer.phar install -d sites/negocios.masmovilpanama.com/themes/custom/masmovil/pattern-lab
+      "docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php vendor/bin/drush --uri=flowpanama.com  cache-rebuild -vvv",
       (error, stdout, stderr) => {
         if (error) {
           console.log(`error: ${error.message}`);
