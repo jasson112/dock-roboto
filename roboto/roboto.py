@@ -39,7 +39,7 @@ class Roboto(object):
         "cwnet": "./cwnetworks.com",
         "bus": "./cwbusiness.com",
     }
-    def __init__(self, clone=None, dock=None, media=None, sqlimport=None, copy=None, sqlexport=None):
+    def __init__(self, clone=None, dock=None, media=None, sqlimport=None, copy=None, sqlexport=None, flush=None):
         for i in range(0,101):
             if i%self._progressEveryPercent==0:
                 self._progressDict[str(i)]=""
@@ -136,6 +136,14 @@ class Roboto(object):
                 elif copy == "trinidad":
                     shutil.copy("./drupal-source/%s/settings.php" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "flowbusiness.co.trinidad-and-tobago", "files", "settings.php"))
                     shutil.copy("./drupal-source/services.yml" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "flowbusiness.co.trinidad-and-tobago", "files", "services.yml"))
+            if flush:
+                if flush == "panama":
+                    #docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php vendor/bin/drush --uri=flowpanama.com  cache-rebuild -vvv
+                    subprocess.run(["docker-compose", "-f", "../soho_docker/apache/docker-compose.yaml", "run", "--rm", "cw-php", "vendor/bin/drush --uri=flowpanama.com  cache-rebuild -vvv"])
+                    click.echo(click.style('Done Flush in panama', fg='green'))
+                if flush == "trinidad":
+                    subprocess.run(["docker-compose", "-f", "../soho_docker/apache/docker-compose.yaml", "run", "--rm", "cw-php", "vendor/bin/drush --uri=flowpanama.com  cache-rebuild -vvv"])
+                    click.echo(click.style('Done Flush in panama', fg='green'))
         else:
             click.echo(click.style('Environment variables not found. Check your .env file', fg='red'))
 
@@ -219,7 +227,8 @@ class Roboto(object):
 @click.option('-sqli', '--sqlimport', "sqlimport", type=str)
 @click.option('-cp', '--copy', "copy", type=str)
 @click.option('-sqle', '--sqlexport', "sqlexport", type=str)
+@click.option('-f', '--flush', "flush", type=str)
 @click.pass_context
-def cli(ctx, clone, dock, media, sqlimport, copy, sqlexport):
-    ctx.obj = Roboto(clone=clone, dock=dock, media=media, copy=copy, sqlexport=sqlexport)
+def cli(ctx, clone, dock, media, sqlimport, copy, sqlexport, flush):
+    ctx.obj = Roboto(clone=clone, dock=dock, media=media, copy=copy, sqlexport=sqlexport, flush=flush)
     
