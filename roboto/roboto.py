@@ -106,8 +106,6 @@ class Roboto(object):
                 elif dock == "composer":
                     subprocess.run(["docker-compose", "-f", "../soho_docker/php/docker-compose.yaml", "run", "--rm", "cw-php", "composer", "install"])
                     click.echo(click.style('Done Docker', fg='green'))
-            print("sqlimport")
-            print(sqlimport)
             if sqlimport:
                 if sqlimport == "panama":
                     self.sqlImport("c_", "negocios_masmovilpanama_com")
@@ -143,10 +141,13 @@ class Roboto(object):
             if flush:
                 if flush == "panama":
                     #docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php vendor/bin/drush --uri=flowpanama.com  cache-rebuild -vvv
-                    subprocess.run(["docker-compose", "-f", "../soho_docker/apache/docker-compose.yaml", "run", "--rm", "cw-php", "vendor/bin/drush --uri=flowpanama.com  cache-rebuild -vvv"])
+                    subprocess.run(["docker-compose", "-f", "../soho_docker/php/docker-compose.yaml", "run", "--rm", "cw-php", "vendor/bin/drush --uri=flowpanama.com  cache-rebuild -vvv"])
                     click.echo(click.style('Done Flush in panama', fg='green'))
-                if flush == "trinidad":
-                    subprocess.run(["docker-compose", "-f", "../soho_docker/apache/docker-compose.yaml", "run", "--rm", "cw-php", "vendor/bin/drush --uri=flowpanama.com  cache-rebuild -vvv"])
+                elif flush == "trinidad":
+                    subprocess.run(["docker-compose", "-f", "../soho_docker/php/docker-compose.yaml", "run", "--rm", "cw-php", "vendor/bin/drush --uri=flowpanama.com  cache-rebuild -vvv"])
+                    click.echo(click.style('Done Flush in panama', fg='green'))
+                elif  flush == "install":
+                    subprocess.run(["docker-compose", "-f", "../soho_docker/php/docker-compose.yaml", "run", "--rm", "cw-php", "composer require drush/drush"])
                     click.echo(click.style('Done Flush in panama', fg='green'))
         else:
             click.echo(click.style('Environment variables not found. Check your .env file', fg='red'))
