@@ -18,10 +18,11 @@ pylint==2.6.0
 PyNaCl==1.4.0
 python-dotenv==0.14.0
 requests==2.24.0
--e git+https://github.com/jasson112/dock-roboto.git@22586798df239859dbe7d3a05d504cd13047a920#egg=roboto&subdirectory=roboto
+-e git+https://github.com/jasson112/dock-roboto.git@77eb96ed11164500e675043c96ef84e5ed5e0b04#egg=roboto&subdirectory=roboto
 six==1.15.0
 smmap==3.0.4
 toml==0.10.1
+tqdm==4.48.2
 typed-ast==1.4.1
 urllib3==1.25.10
 websocket-client==0.57.0
