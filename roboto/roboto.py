@@ -131,7 +131,7 @@ class Roboto(object):
                     )
             if copy:
                 if copy == "sites":
-                    shutil.copy("./drupal-source/sites.php", os.path.join(self._cloneDirs.get("flow"), "sites", "settings.php"))
+                    shutil.copy("./drupal-source/sites.php", os.path.join(self._cloneDirs.get("flow"), "sites", "sites.php"))
                 elif copy == "panama":
                     shutil.copy("./drupal-source/%s/settings.php" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "negocios.masmovilpanama.com", "settings.php"))
                     shutil.copy("./drupal-source/services.yml", os.path.join(self._cloneDirs.get("flow"), "sites", "negocios.masmovilpanama.com", "services.yml"))
