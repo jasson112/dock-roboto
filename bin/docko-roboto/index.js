@@ -872,6 +872,7 @@ class DockoRoboto {
     } else {
       compression = undefined;
     }
+    console.log(cmd)
     conn.exec(cmd, function (err, stream) {
       if (err) {
         return cb(err);

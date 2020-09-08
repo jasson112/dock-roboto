@@ -7,6 +7,15 @@ import shutil
 import subprocess
 import paramiko
 from stat import S_ISDIR
+import tarfile
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+import gzip
+from tqdm import tqdm
+from io import BytesIO
+import sys
 
 class Progress(git.remote.RemoteProgress):
     def update(self, op_code, cur_count, max_count=None, message=''):
@@ -35,7 +44,7 @@ class Roboto(object):
             if i%self._progressEveryPercent==0:
                 self._progressDict[str(i)]=""
         if os.getenv("GIT_USER") and os.getenv("GIT_PASS") and os.getenv("SSH_USER") and os.getenv("SSH_PASS"):
-            click.echo(click.style('All rigthooo !', fg='green'))
+            #click.echo(click.style('All rigthooo !', fg='green'))
             self._credentials.get("git")["user"] = os.getenv("GIT_USER")
             self._credentials.get("git")["pass"] = os.getenv("GIT_PASS")
             self._credentials.get("ssh")["user"] = os.getenv("SSH_USER")
@@ -106,9 +115,10 @@ class Roboto(object):
             if media:
                 if media == "panama":
                     self.downloadDir(
-                        "/var/www/html/flowbusiness.co/sites/negocios.masmovilpanama.com/files", 
-                        os.path.join(self._cloneDirs.get("flow"), "sites", "negocios.masmovilpanama.com", "files"), 
-                        "10.255.229.14"
+                        "/var/www/html/flowbusiness.co/sites/negocios.masmovilpanama.com", 
+                        os.path.join(self._cloneDirs.get("flow"), "sites", "negocios.masmovilpanama.com"), 
+                        "10.255.229.14",
+                        "files"
                     )
             if copy:
                 if copy == "sites":
@@ -155,13 +165,41 @@ class Roboto(object):
                     sftp.get(os.path.join(os.path.join(path,f.filename)), localpath=os.path.join(abspath, f.filename), callback=lambda x,y: self.printProgressDecimal(x,y))
                     click.echo(click.style("100% - Downloaded !", fg='blue'))
                 
-    def downloadDir(self, remote, local, host):
+    def downloadDir(self, remote, local, host, files):
         paramiko.util.log_to_file('/tmp/paramiko.log')
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.connect(hostname=host, port=22, username=self._credentials.get("ssh")["user"], password="valy9enWnntri$ne")
         sftp = ssh.open_sftp()
-        self.sftp_walk(remote, sftp, remote, local)
+        members = None
+        cmd = 'cd {remote} && tar cf - "{files}" --strip-components=5 2>/dev/null | gzip -9 2>/dev/null'.format(remote=remote, files=files)
+        stdin, stdout, stderr = ssh.exec_command(cmd)
+        #<TRICK
+        #print(cmd)
+        print(os.path.expanduser("~/Documents/dev/dock-roboto/{local}".format(local=local)))
+        sys.stdout = open("{local}/temp.tar.gz".format(local=local), 'wb')
+        sys.stdout.write(stdout.read())
+        sys.stdout.close()
+        
+        """
+        Extracts `tar_file` and puts the `members` to `path`.
+        If members is None, all members on `tar_file` will be extracted.
+        """
+        tar = tarfile.open(local, mode="r:gz")
+        if members is None:
+            members = tar.getmembers()
+        # with progress bar
+        # set the progress bar
+        progress = tqdm(members)
+        for member in progress:
+            tar.extract(member, path=local)
+            # set the progress description of the progress bar
+            progress.set_description(f"Extracting {member.name}")
+        # or use this
+        # tar.extractall(members=members, path=path)
+        # close the file
+        tar.close()
+        
 
 
 @click.group(invoke_without_command=True)
