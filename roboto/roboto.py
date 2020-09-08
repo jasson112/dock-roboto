@@ -144,7 +144,7 @@ class Roboto(object):
                     subprocess.run(["docker-compose", "-f", "../soho_docker/php/docker-compose.yaml", "run", "--rm", "cw-php", "vendor/bin/drush --uri=flowpanama.com  cache-rebuild -vvv"])
                     click.echo(click.style('Done Flush in panama', fg='green'))
                 elif flush == "trinidad":
-                    subprocess.run(["docker-compose", "-f", "../soho_docker/php/docker-compose.yaml", "run", "--rm", "cw-php", "vendor/bin/drush --uri=flowpanama.com  cache-rebuild -vvv"])
+                    subprocess.run(["docker-compose", "-f", "../soho_docker/php/docker-compose.yaml", "run", "--rm", "cw-php", "vendor/bin/drush --uri=flowbusiness.co.trinidad-and-tobago cache-rebuild -vvv"])
                     click.echo(click.style('Done Flush in panama', fg='green'))
                 elif  flush == "install":
                     subprocess.run(["docker-compose", "-f", "../soho_docker/php/docker-compose.yaml", "run", "--rm", "cw-php", "composer require drush/drush"])
