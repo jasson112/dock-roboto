@@ -106,6 +106,8 @@ class Roboto(object):
                 elif dock == "composer":
                     subprocess.run(["docker-compose", "-f", "../soho_docker/php/docker-compose.yaml", "run", "--rm", "cw-php", "composer", "install"])
                     click.echo(click.style('Done Docker', fg='green'))
+            print("sqlimport")
+            print(sqlimport)
             if sqlimport:
                 if sqlimport == "panama":
                     self.sqlImport("c_", "negocios_masmovilpanama_com")
@@ -232,5 +234,5 @@ class Roboto(object):
 @click.option('-f', '--flush', "flush", type=str)
 @click.pass_context
 def cli(ctx, clone, dock, media, sqlimport, copy, sqlexport, flush):
-    ctx.obj = Roboto(clone=clone, dock=dock, media=media, copy=copy, sqlexport=sqlexport, flush=flush)
+    ctx.obj = Roboto(clone=clone, dock=dock, media=media, copy=copy, sqlexport=sqlexport, flush=flush, sqlimport=sqlimport)
     
