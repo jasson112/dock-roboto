@@ -190,7 +190,7 @@ class Roboto(object):
         ssh.connect(hostname=host, port=22, username=self._credentials.get("ssh")["user"], password="valy9enWnntri$ne")
         sftp = ssh.open_sftp()
         members = None
-        cmd = 'cd {remote} && tar cf - "{files}" --strip-components=5 2>/dev/null | gzip -9 2>/dev/null'.format(remote=remote, files=files)
+        cmd = 'cd {remote} && tar cf - "{files}" --exclude="css" --exclude="js" --exclude="php" --strip-components=5 2>/dev/null | gzip -9 2>/dev/null'.format(remote=remote, files=files)
         stdin, stdout, stderr = ssh.exec_command(cmd)
         #<TRICK
         #print(cmd)
@@ -203,7 +203,7 @@ class Roboto(object):
         Extracts `tar_file` and puts the `members` to `path`.
         If members is None, all members on `tar_file` will be extracted.
         """
-        tar = tarfile.open(local, mode="r:gz")
+        tar = tarfile.open("{local}/temp.tar.gz".format(local=local), mode="r:gz")
         if members is None:
             members = tar.getmembers()
         # with progress bar
