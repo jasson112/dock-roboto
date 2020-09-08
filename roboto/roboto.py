@@ -129,13 +129,13 @@ class Roboto(object):
                     )
             if copy:
                 if copy == "sites":
-                    shutil.copy("./drupal-source/sites.php" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "settings.php"))
+                    shutil.copy("./drupal-source/sites.php", os.path.join(self._cloneDirs.get("flow"), "sites", "settings.php"))
                 elif copy == "panama":
                     shutil.copy("./drupal-source/%s/settings.php" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "negocios.masmovilpanama.com", "settings.php"))
-                    shutil.copy("./drupal-source/services.yml" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "negocios.masmovilpanama.com", "services.yml"))
+                    shutil.copy("./drupal-source/services.yml", os.path.join(self._cloneDirs.get("flow"), "sites", "negocios.masmovilpanama.com", "services.yml"))
                 elif copy == "trinidad":
                     shutil.copy("./drupal-source/%s/settings.php" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "flowbusiness.co.trinidad-and-tobago", "settings.php"))
-                    shutil.copy("./drupal-source/services.yml" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "flowbusiness.co.trinidad-and-tobago", "services.yml"))
+                    shutil.copy("./drupal-source/services.yml", os.path.join(self._cloneDirs.get("flow"), "sites", "flowbusiness.co.trinidad-and-tobago", "services.yml"))
             if flush:
                 if flush == "panama":
                     #docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php vendor/bin/drush --uri=flowpanama.com  cache-rebuild -vvv
