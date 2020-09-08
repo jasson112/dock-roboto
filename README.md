@@ -18,6 +18,17 @@
    ```
    source venv/bin/activate
    ```
+3. install dependencies
+
+   ```
+   pip install -r ./roboto/requirements.txt
+   ```
+
+4. isntall the command
+
+   ```
+   pip install --editable ./roboto
+   ```
 
 
 # USAGE

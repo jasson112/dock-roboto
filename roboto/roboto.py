@@ -80,7 +80,7 @@ class Roboto(object):
                     self.gitClone(url, path)
                 elif clone == "trinidad":
                     url = self._repos.get("flow")[clone]
-                    path = "%s/sites/flowbusiness.co.trinidad" % (self._cloneDirs.get("flow"))
+                    path = "%s/sites/flowbusiness.co.trinidad-and-tobagod" % (self._cloneDirs.get("flow"))
                     click.echo(click.style('clone url %s' % (url), fg='green'))
                     self.gitClone(url, path)
                 elif clone == "net":
