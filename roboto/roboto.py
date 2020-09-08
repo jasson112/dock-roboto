@@ -109,6 +109,8 @@ class Roboto(object):
             if sqlimport:
                 if sqlimport == "panama":
                     self.sqlImport("c_", "negocios_masmovilpanama_com")
+                elif sqlimport == "trinidad":
+                    self.sqlImport("e_", "flowbusiness_tt")
             if sqlexport:
                 if sqlexport:
                     self.sqlExport("c_", "negocios_masmovilpanama_com")
