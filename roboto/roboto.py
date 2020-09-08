@@ -120,12 +120,22 @@ class Roboto(object):
                         "10.255.229.14",
                         "files"
                     )
+                elif media == "trinidad":
+                    self.downloadDir(
+                        "/var/www/html/dev.flowbusiness.co/sites/flowbusiness.co.trinidad-and-tobago", 
+                        os.path.join(self._cloneDirs.get("flow"), "sites", "flowbusiness.co.trinidad-and-tobago"), 
+                        "10.255.229.13",
+                        "files"
+                    )
             if copy:
                 if copy == "sites":
                     shutil.copy("./drupal-source/sites.php" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "settings.php"))
                 elif copy == "panama":
                     shutil.copy("./drupal-source/%s/settings.php" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "negocios.masmovilpanama.com", "files", "settings.php"))
                     shutil.copy("./drupal-source/services.yml" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "negocios.masmovilpanama.com", "files", "services.yml"))
+                elif copy == "trinidad":
+                    shutil.copy("./drupal-source/%s/settings.php" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "flowbusiness.co.trinidad-and-tobago", "files", "settings.php"))
+                    shutil.copy("./drupal-source/services.yml" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "flowbusiness.co.trinidad-and-tobago", "files", "services.yml"))
         else:
             click.echo(click.style('Environment variables not found. Check your .env file', fg='red'))
 
