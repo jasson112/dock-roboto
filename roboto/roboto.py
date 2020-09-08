@@ -80,7 +80,7 @@ class Roboto(object):
                     self.gitClone(url, path)
                 elif clone == "trinidad":
                     url = self._repos.get("flow")[clone]
-                    path = "%s/sites/flowbusiness.co.trinidad-and-tobagod" % (self._cloneDirs.get("flow"))
+                    path = "%s/sites/flowbusiness.co.trinidad-and-tobago" % (self._cloneDirs.get("flow"))
                     click.echo(click.style('clone url %s' % (url), fg='green'))
                     self.gitClone(url, path)
                 elif clone == "net":
@@ -131,11 +131,11 @@ class Roboto(object):
                 if copy == "sites":
                     shutil.copy("./drupal-source/sites.php" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "settings.php"))
                 elif copy == "panama":
-                    shutil.copy("./drupal-source/%s/settings.php" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "negocios.masmovilpanama.com", "files", "settings.php"))
-                    shutil.copy("./drupal-source/services.yml" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "negocios.masmovilpanama.com", "files", "services.yml"))
+                    shutil.copy("./drupal-source/%s/settings.php" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "negocios.masmovilpanama.com", "settings.php"))
+                    shutil.copy("./drupal-source/services.yml" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "negocios.masmovilpanama.com", "services.yml"))
                 elif copy == "trinidad":
-                    shutil.copy("./drupal-source/%s/settings.php" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "flowbusiness.co.trinidad-and-tobago", "files", "settings.php"))
-                    shutil.copy("./drupal-source/services.yml" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "flowbusiness.co.trinidad-and-tobago", "files", "services.yml"))
+                    shutil.copy("./drupal-source/%s/settings.php" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "flowbusiness.co.trinidad-and-tobago", "settings.php"))
+                    shutil.copy("./drupal-source/services.yml" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "flowbusiness.co.trinidad-and-tobago", "services.yml"))
             if flush:
                 if flush == "panama":
                     #docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php vendor/bin/drush --uri=flowpanama.com  cache-rebuild -vvv
