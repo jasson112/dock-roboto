@@ -161,11 +161,11 @@ class Roboto(object):
         click.echo(click.style('Done cloning !', fg='green'))
     
     def sqlImport(self, prefix, db):
-        subprocess.run(["cat ../soho_docker/mysql/dump/{prefix}{db}.sql | docker exec -i cw-mysql /usr/bin/mysql -u root --password=root {db}".format(prefix=prefix, db=db)])
+        subprocess.run(["cat", "../soho_docker/mysql/dump/{prefix}{db}.sql".format(prefix=prefix, db=db), "|", "docker", "exec", "-i", "cw-mysql", "/usr/bin/mysql", "-u", "root", "--password=root", "{db}".format(db=db)])
         click.echo(click.style('Done Importing', fg='green'))
     
     def sqlExport(self, prefix, db):
-        subprocess.run(["docker exec -i cw-mysql mysqldump -uroot -proot --databases {db} > ../soho_docker/mysql/dump/{prefix}{db}.sql".format(prefix=prefix, db=db)])
+        subprocess.run(["docker", "exec", "-i", "cw-mysql", "mysqldump", "-uroot", "-proot", "--databases", "{db}".format(db=db), ">", "../soho_docker/mysql/dump/{prefix}{db}.sql".format(prefix=prefix, db=db)])
         click.echo(click.style('Done Exporting', fg='green'))
 
     def printProgressDecimal(self,x,y):
@@ -192,7 +192,7 @@ class Roboto(object):
         paramiko.util.log_to_file('/tmp/paramiko.log')
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(hostname=host, port=22, username=self._credentials.get("ssh")["user"], password="valy9enWnntri$ne")
+        ssh.connect(hostname=host, port=22, username=self._credentials.get("ssh")["user"], password=self._credentials.get("ssh")["pass"])
         sftp = ssh.open_sftp()
         members = None
         cmd = 'cd {remote} && tar cf - "{files}" --exclude="css" --exclude="js" --exclude="php" --strip-components=5 2>/dev/null | gzip -9 2>/dev/null'.format(remote=remote, files=files)
