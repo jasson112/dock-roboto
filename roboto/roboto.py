@@ -111,6 +111,8 @@ class Roboto(object):
                     self.sqlImport("c_", "negocios_masmovilpanama_com")
                 elif sqlimport == "trinidad":
                     self.sqlImport("e_", "flowbusiness_tt")
+                elif sqlimport == "bus":
+                    self.sqlImport("d_", "cwcbusin_wp.sql")
             if sqlexport:
                 if sqlexport:
                     self.sqlExport("c_", "negocios_masmovilpanama_com")
@@ -129,6 +131,13 @@ class Roboto(object):
                         "10.255.229.13",
                         "files"
                     )
+                elif media == "trinidad":
+                    self.downloadDir(
+                        "/var/www/html/cwcbusiness/wp-content", 
+                        os.path.join(self._cloneDirs.get("bus"), "wp-content"), 
+                        "10.255.229.17",
+                        "uploads"
+                    )
             if copy:
                 if copy == "sites":
                     shutil.copy("./drupal-source/sites.php", os.path.join(self._cloneDirs.get("flow"), "sites", "sites.php"))
@@ -138,6 +147,9 @@ class Roboto(object):
                 elif copy == "trinidad":
                     shutil.copy("./drupal-source/%s/settings.php" % (copy), os.path.join(self._cloneDirs.get("flow"), "sites", "flowbusiness.co.trinidad-and-tobago", "settings.php"))
                     shutil.copy("./drupal-source/services.yml", os.path.join(self._cloneDirs.get("flow"), "sites", "flowbusiness.co.trinidad-and-tobago", "services.yml"))
+                elif copy == "bus":
+                    shutil.copy("./wp-source/business/.htaccess", os.path.join(self._cloneDirs.get("bus"), ".htaccess"))
+                    shutil.copy("./wp-source/business/wp-config.php", os.path.join(self._cloneDirs.get("flow"),"wp-config.php"))
             if flush:
                 if flush == "panama":
                     #docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php vendor/bin/drush --uri=flowpanama.com  cache-rebuild -vvv
@@ -165,8 +177,11 @@ class Roboto(object):
         click.echo(click.style('Done Importing', fg='green'))
     
     def sqlExport(self, prefix, db):
-        subprocess.run(["docker", "exec", "-i", "cw-mysql", "mysqldump", "-uroot", "-proot", "--databases", "{db}".format(db=db), ">", "../soho_docker/mysql/dump/{prefix}{db}.sql".format(prefix=prefix, db=db)])
-        click.echo(click.style('Done Exporting', fg='green'))
+        sql = subprocess.run(["docker", "exec", "-i", "cw-mysql", "mysqldump", "-uroot", "-proot", "--databases", "{db}".format(db=db)], stdout=subprocess.PIPE)
+        sys.stdout = open("../soho_docker/mysql/dump/{prefix}{db}.sql".format(prefix=prefix, db=db), 'wb')
+        sys.stdout.write(sql.stdout)
+        sys.stdout.close()
+        #click.echo(click.style('Done Exporting', fg='green'))
 
     def printProgressDecimal(self,x,y):
         if int(100*(int(x)/int(y))) % self._progressEveryPercent ==0 and self._progressDict[str(int(100*(int(x)/int(y))))]=="":
