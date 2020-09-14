@@ -149,7 +149,7 @@ class Roboto(object):
                     shutil.copy("./drupal-source/services.yml", os.path.join(self._cloneDirs.get("flow"), "sites", "flowbusiness.co.trinidad-and-tobago", "services.yml"))
                 elif copy == "bus":
                     shutil.copy("./wp-source/business/.htaccess", os.path.join(self._cloneDirs.get("bus"), ".htaccess"))
-                    shutil.copy("./wp-source/business/wp-config.php", os.path.join(self._cloneDirs.get("flow"),"wp-config.php"))
+                    shutil.copy("./wp-source/business/wp-config.php", os.path.join(self._cloneDirs.get("bus"),"wp-config.php"))
             if flush:
                 if flush == "panama":
                     #docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php vendor/bin/drush --uri=flowpanama.com  cache-rebuild -vvv
