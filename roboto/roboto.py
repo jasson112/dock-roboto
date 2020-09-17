@@ -131,7 +131,7 @@ class Roboto(object):
                         "10.255.229.13",
                         "files"
                     )
-                elif media == "trinidad":
+                elif media == "bus":
                     self.downloadDir(
                         "/var/www/html/cwcbusiness/wp-content", 
                         os.path.join(self._cloneDirs.get("bus"), "wp-content"), 
