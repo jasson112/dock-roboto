@@ -39,7 +39,7 @@ class Roboto(object):
         "cwnet": "./cwnetworks.com",
         "bus": "./cwbusiness.com",
     }
-    def __init__(self, clone=None, dock=None, media=None, sqlimport=None, copy=None, sqlexport=None, flush=None):
+    def __init__(self, clone=None, dock=None, media=None, sqlimport=None, copy=None, sqlexport=None, flush=None, path=None):
         for i in range(0,101):
             if i%self._progressEveryPercent==0:
                 self._progressDict[str(i)]=""
@@ -132,11 +132,15 @@ class Roboto(object):
                         "files"
                     )
                 elif media == "bus":
+                    
+                    if path is None:
+                        path = "uploads"
+                    print(path)
                     self.downloadDir(
                         "/var/www/html/cwcbusiness/wp-content", 
                         os.path.join(self._cloneDirs.get("bus"), "wp-content"), 
                         "10.255.229.17",
-                        "uploads"
+                        path
                     )
             if copy:
                 if copy == "sites":
@@ -209,12 +213,13 @@ class Roboto(object):
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.connect(hostname=host, port=22, username=self._credentials.get("ssh")["user"], password=self._credentials.get("ssh")["pass"])
         sftp = ssh.open_sftp()
+        ssh.get_transport().window_size = 3 * 1024 * 1024
         members = None
-        cmd = 'cd {remote} && tar cf - "{files}" --exclude="css" --exclude="js" --exclude="php" --strip-components=5 2>/dev/null | gzip -9 2>/dev/null'.format(remote=remote, files=files)
+        cmd = 'cd {remote} && tar cf - "{files}" --exclude="ShortpixelBackups" --exclude="cache" --exclude="elementor" --exclude="file-manager" --exclude="flags" --exclude="pum" --exclude="css" --exclude="js" --exclude="php" --strip-components=5 2>/dev/null | gzip -1c 2>/dev/null'.format(remote=remote, files=files)
         stdin, stdout, stderr = ssh.exec_command(cmd)
+        stdin.close()
         #<TRICK
-        #print(cmd)
-        print(os.path.expanduser("~/Documents/dev/dock-roboto/{local}".format(local=local)))
+        #print(os.path.expanduser("~/Documents/dev/dock-roboto/{local}".format(local=local)))
         sys.stdout = open("{local}/temp.tar.gz".format(local=local), 'wb')
         sys.stdout.write(stdout.read())
         sys.stdout.close()
@@ -244,11 +249,12 @@ class Roboto(object):
 @click.option('-c', '--clone', "clone", type=str)
 @click.option('-d', '--dock', "dock", type=str)
 @click.option('-m', '--media', "media", type=str)
+@click.option('-p', '--path', "path", type=str)
 @click.option('-sqli', '--sqlimport', "sqlimport", type=str)
 @click.option('-cp', '--copy', "copy", type=str)
 @click.option('-sqle', '--sqlexport', "sqlexport", type=str)
 @click.option('-f', '--flush', "flush", type=str)
 @click.pass_context
-def cli(ctx, clone, dock, media, sqlimport, copy, sqlexport, flush):
-    ctx.obj = Roboto(clone=clone, dock=dock, media=media, copy=copy, sqlexport=sqlexport, flush=flush, sqlimport=sqlimport)
+def cli(ctx, clone, dock, media, sqlimport, copy, sqlexport, flush, path):
+    ctx.obj = Roboto(clone=clone, dock=dock, media=media, copy=copy, sqlexport=sqlexport, flush=flush, sqlimport=sqlimport, path=path)
     
