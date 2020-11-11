@@ -131,20 +131,24 @@ class Roboto(object):
                     self.sqlExport("d_", "cwcbusin_wp")
             if media:
                 if media == "panama":
+                    if path is None:
+                        path = "files"
                     self.downloadDir(
                         "/var/www/html/flowbusiness.co/sites/negocios.masmovilpanama.com",
                         os.path.join(self._cloneDirs.get("flow"),
                                      "sites", "negocios.masmovilpanama.com"),
                         "10.255.229.15",
-                        "files"
+                        path
                     )
                 elif media == "trinidad":
+                    if path is None:
+                        path = "files"
                     self.downloadDir(
                         "/var/www/html/dev.flowbusiness.co/sites/flowbusiness.co.trinidad-and-tobago",
                         os.path.join(self._cloneDirs.get(
                             "flow"), "sites", "flowbusiness.co.trinidad-and-tobago"),
                         "10.255.229.13",
-                        "files"
+                        path
                     )
                 elif media == "bus":
 
@@ -176,6 +180,11 @@ class Roboto(object):
                                 os.path.join(self._cloneDirs.get("bus"), ".htaccess"))
                     shutil.copy("./wp-source/business/wp-config.php",
                                 os.path.join(self._cloneDirs.get("bus"), "wp-config.php"))
+                elif copy == "net":
+                    shutil.copy("./wp-source/net/.htaccess",
+                                os.path.join(self._cloneDirs.get("cwnet"), ".htaccess"))
+                    shutil.copy("./wp-source/net/wp-config.php",
+                                os.path.join(self._cloneDirs.get("cwnet"), "wp-config.php"))
             if flush:
                 if flush == "panama":
                     # docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php vendor/bin/drush --uri=flowpanama.com  cache-rebuild -vvv
