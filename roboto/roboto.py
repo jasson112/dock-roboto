@@ -129,15 +129,18 @@ class Roboto(object):
                     self.sqlExport("c_", "negocios_masmovilpanama_com")
                 elif sqlexport == "bus":
                     self.sqlExport("d_", "cwcbusin_wp")
+                elif sqlexport == "trinidad":
+                    self.sqlExport("e_", "flowbusiness_tt")
             if media:
                 if media == "panama":
                     if path is None:
                         path = "files"
+                    print("ptah", path)
                     self.downloadDir(
                         "/var/www/html/flowbusiness.co/sites/negocios.masmovilpanama.com",
                         os.path.join(self._cloneDirs.get("flow"),
                                      "sites", "negocios.masmovilpanama.com"),
-                        "10.255.229.15",
+                        "10.255.229.14",
                         path
                     )
                 elif media == "trinidad":
