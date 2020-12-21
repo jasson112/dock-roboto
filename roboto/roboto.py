@@ -146,17 +146,17 @@ class Roboto(object):
                 elif media == "trinidad":
                     if path is None:
                         path = "files"
-
                     print("ptah", path)
+                    print(os.path.join(self._cloneDirs.get(
+                        "flow"), "sites", "flowbusiness.co.trinidad-and-tobago"))
                     self.downloadDir(
-                        "/var/www/html/dev.flowbusiness.co/sites/flowbusiness.co.trinidad-and-tobago",
+                        "/var/www/html/flowbusiness.co/sites/flowbusiness.co.trinidad-and-tobago",
                         os.path.join(self._cloneDirs.get(
                             "flow"), "sites", "flowbusiness.co.trinidad-and-tobago"),
                         "10.255.229.14",
                         path
                     )
                 elif media == "bus":
-
                     if path is None:
                         path = "uploads"
                     print(path)
