@@ -1,3 +1,4 @@
+from atlassian import Bamboo
 import sys
 from io import BytesIO
 from tqdm import tqdm
@@ -10,6 +11,7 @@ import shutil
 import git
 import os
 import click
+import requests
 from dotenv import load_dotenv
 load_dotenv()
 try:
@@ -35,6 +37,11 @@ class Roboto(object):
         "git": {
             "user": None,
             "pass": None
+        },
+        "atlassian": {
+            "user": None,
+            "pass": None,
+            "url": "https://bamboo-qa.cwc-apps.com/"
         }
     }
     _cloneDirs = {
@@ -43,12 +50,16 @@ class Roboto(object):
         "bus": "./cwbusiness.com",
     }
 
-    def __init__(self, clone=None, dock=None, media=None, sqlimport=None, copy=None, sqlexport=None, flush=None, path=None):
+    def __init__(self, clone=None, dock=None, media=None, sqlimport=None, copy=None, sqlexport=None, flush=None, path=None, bam=None):
         for i in range(0, 101):
             if i % self._progressEveryPercent == 0:
                 self._progressDict[str(i)] = ""
         if os.getenv("GIT_USER") and os.getenv("GIT_PASS") and os.getenv("SSH_USER") and os.getenv("SSH_PASS"):
-            #click.echo(click.style('All rigthooo !', fg='green'))
+            # click.echo(click.style('All rigthooo !', fg='green'))
+            self._credentials.get("atlassian")[
+                "user"] = os.getenv("ATLASSIAN_USER")
+            self._credentials.get("atlassian")[
+                "pass"] = os.getenv("ATLASSIAN_PASS")
             self._credentials.get("git")["user"] = os.getenv("GIT_USER")
             self._credentials.get("git")["pass"] = os.getenv("GIT_PASS")
             self._credentials.get("ssh")["user"] = os.getenv("SSH_USER")
@@ -65,6 +76,53 @@ class Roboto(object):
                     "bus": "http://%s:%s@bssstash.corp-it.cc:7990/scm/cwcbus/core.git" % (self._credentials.get("git")["user"], self._credentials.get("git")["pass"]),
                 }
             }
+            if bam:
+                bamboo = Bamboo(
+                    url=self._credentials.get("atlassian")["url"],
+                    username=self._credentials.get("atlassian")["user"],
+                    password=self._credentials.get("atlassian")["pass"],
+                    advanced_mode=True
+                )
+                if bam == "panama":
+                    plan = bamboo.get_plan('CMS-SITCWPNEG')
+                    the_build = bamboo.execute_build(
+                        plan_key=plan.json().get('key'))
+                    click.echo(click.style('Build execution status: {}'.format(
+                        the_build.status_code), fg='green'))
+                    if the_build.status_code == 200:
+                        click.echo(click.style("Build key: {}".format(
+                            the_build.json().get("buildResultKey")), fg='green'))
+                        click.echo(
+                            click.style(the_build.json().get("link", {}).get('href'), fg='green'))
+                        res = requests.get(
+                            'https://bamboo-qa.cwc-apps.com/rest/api/latest/deploy/project/all', auth=(self._credentials.get("atlassian")["user"], self._credentials.get("atlassian")["pass"]))
+                        resDep = requests.get(
+                            'https://bamboo-qa.cwc-apps.com/rest/api/latest/deploy/project/9797640/versions', auth=(self._credentials.get("atlassian")["user"], self._credentials.get("atlassian")["pass"]))
+                        releaseName = 'release-{}'.format(int(resDep.json()['versions'][0]['name'].replace('release-', '')) + 1)
+                        planResultNum = resDep.json()['versions'][0]['items'][0]['planResultKey']['resultNumber']+1
+                        planResultKey = '{}-{}'.format(resDep.json()['versions'][0]['items'][0]['planResultKey']['entityKey']['key'], planResultNum)
+                        job = requests.post('https://bamboo-qa.cwc-apps.com/rest/api/latest/deploy/project/9797640/version',
+                                            auth=(self._credentials.get("atlassian")["user"], self._credentials.get("atlassian")["pass"]),
+                                            json={"planResultKey": planResultKey, "name": releaseName},
+                                            headers={"Content-Type": "application/json", "Accepts": "application/json"})
+                        for item in res.json():
+                            if 'planKey' in item:
+                                # Name: CW Panama Negocios - QAT key: 9797635
+                                # Name: CW Panama Negocios - STG key: 9797638
+                                # Name: CW Panama Negocios - PRD key: 9797640
+                                # IN THIS CASE I WANT TO USE PROD
+                                if item['planKey']['key'] == 'CMS-SITCWPNEG' and item['key']['key'] == '9797640':
+                                    for env in item['environments']:
+                                        releaseJob = requests.post(
+                                            'https://bamboo-qa.cwc-apps.com/rest/api/latest/queue/deployment/?environmentId={}&versionId={}'.format(env['id'], job.json()['id']),
+                                            auth=(self._credentials.get("atlassian")["user"], self._credentials.get("atlassian")["pass"]),
+                                            headers={"Accepts": "application/json"})
+                                        click.echo(click.style("ENVIRONMENT RELEASED: {}".format(env['name']), fg='green'))
+                    else:
+                        click.echo(click.style("Execution failed!", fg='red'))
+                        click.echo(click.style(
+                            the_build.json().get("message"), fg='red'))
+
             if clone:
                 click.echo(click.style('Cloning %s' % (clone), fg='green'))
                 if clone == "panama":
@@ -135,7 +193,8 @@ class Roboto(object):
                 if media == "panama":
                     if path is None:
                         path = "files"
-
+                    print('path')
+                    print(path)
                     self.downloadDir(
                         "/var/www/html/flowbusiness.co/sites/negocios.masmovilpanama.com",
                         os.path.join(self._cloneDirs.get("flow"),
@@ -228,7 +287,7 @@ class Roboto(object):
             "../soho_docker/mysql/dump/{prefix}{db}.sql".format(prefix=prefix, db=db), 'wb')
         sys.stdout.write(sql.stdout)
         sys.stdout.close()
-        #click.echo(click.style('Done Exporting', fg='green'))
+        # click.echo(click.style('Done Exporting', fg='green'))
 
     def printProgressDecimal(self, x, y):
         if int(100*(int(x)/int(y))) % self._progressEveryPercent == 0 and self._progressDict[str(int(100*(int(x)/int(y))))] == "":
@@ -294,16 +353,17 @@ class Roboto(object):
         tar.close()
 
 
-@click.group(invoke_without_command=True)
-@click.option('-c', '--clone', "clone", type=str)
-@click.option('-d', '--dock', "dock", type=str)
-@click.option('-m', '--media', "media", type=str)
-@click.option('-p', '--path', "path", type=str)
-@click.option('-sqli', '--sqlimport', "sqlimport", type=str)
-@click.option('-cp', '--copy', "copy", type=str)
-@click.option('-sqle', '--sqlexport', "sqlexport", type=str)
-@click.option('-f', '--flush', "flush", type=str)
-@click.pass_context
-def cli(ctx, clone, dock, media, sqlimport, copy, sqlexport, flush, path):
+@ click.group(invoke_without_command=True)
+@ click.option('-c', '--clone', "clone", type=str)
+@ click.option('-d', '--dock', "dock", type=str)
+@ click.option('-m', '--media', "media", type=str)
+@ click.option('-p', '--path', "path", type=str)
+@ click.option('-sqli', '--sqlimport', "sqlimport", type=str)
+@ click.option('-cp', '--copy', "copy", type=str)
+@ click.option('-sqle', '--sqlexport', "sqlexport", type=str)
+@ click.option('-f', '--flush', "flush", type=str)
+@ click.option('-b', '--bam', "bam", type=str)
+@ click.pass_context
+def cli(ctx, clone, dock, media, sqlimport, copy, sqlexport, flush, path, bam):
     ctx.obj = Roboto(clone=clone, dock=dock, media=media, copy=copy,
-                     sqlexport=sqlexport, flush=flush, sqlimport=sqlimport, path=path)
+                     sqlexport=sqlexport, flush=flush, sqlimport=sqlimport, path=path, bam=bam)
