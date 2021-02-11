@@ -674,8 +674,12 @@ $config['system.performance']['js']['preprocess'] = FALSE;
  * Load services definition file.
  */
 //$settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.yml';
-$settings['container_yamls'][] = __DIR__ . '/services.yml';
-//$settings['cache']['bins']['page'] = 'cache.backend.null';
+$settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.yml';
+//$settings['container_yamls'][] = __DIR__ . '/services.yml';
+$settings['cache']['bins']['page'] = 'cache.backend.null';
+$settings['cache']['bins']['dynamic_page_cache'] = 'cache.backend.null';
+$settings['cache']['bins']['render'] = 'cache.backend.null';
+$_kintSettings['maxLevels'] = 3;
 
 /**
  * Override the default service container class.

@@ -770,7 +770,6 @@ $settings['entity_update_batch_size'] = 50;
  */
 $settings['entity_update_backup'] = TRUE;
 
-
 /**
  * Load local development override configuration, if available.
  *
@@ -781,14 +780,13 @@ $settings['entity_update_backup'] = TRUE;
  *
  * Keep this code block at the end of this file to take full effect.
  */
-//$settings ["cache"] ["bins"] ["render"] = "cache.backend.null";
 #
 if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
   include $app_root . '/' . $site_path . '/settings.local.php';
 }
 
 $databases['default']['default'] = array (
-  'database' => 'flowbusiness_tt',
+  'database' => 'flowbusiness_jm',
   'username' => 'root',
   'password' => 'root',
   'prefix' => '',
@@ -798,7 +796,7 @@ $databases['default']['default'] = array (
   'driver' => 'mysql',
 );
 
-$config_directories['sync'] = 'sites/flowbusiness.co.trinidad/config/sync';
+$config_directories['sync'] = 'sites/flowbusiness.co.jamaica/config/sync';
 
 // Change kint maxLevels setting:
 include_once(DRUPAL_ROOT . '/modules/contrib/devel/kint/kint/Kint.class.php');

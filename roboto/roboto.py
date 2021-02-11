@@ -22,8 +22,7 @@ except ImportError:
 
 class Progress(git.remote.RemoteProgress):
     def update(self, op_code, cur_count, max_count=None, message=''):
-        click.echo(click.style('Cloning(%s, %s, %s, %s)' %
-                               (op_code, cur_count, max_count, message), fg='yellow'))
+        click.echo(click.style('Cloning(%s, %s, %s, %s)' % (op_code, cur_count, max_count, message), fg='yellow'))
 
 
 class Roboto(object):
@@ -50,7 +49,7 @@ class Roboto(object):
         "bus": "./cwbusiness.com",
     }
 
-    def __init__(self, clone=None, dock=None, media=None, sqlimport=None, copy=None, sqlexport=None, flush=None, path=None, bam=None):
+    def __init__(self, clone=None, dock=None, media=None, sqlimport=None, copy=None, sqlexport=None, flush=None, path=None, bam=None, action=None):
         for i in range(0, 101):
             if i % self._progressEveryPercent == 0:
                 self._progressDict[str(i)] = ""
@@ -84,16 +83,22 @@ class Roboto(object):
                     advanced_mode=True
                 )
                 if bam == "panama":
-                    plan = bamboo.get_plan('CMS-SITCWPNEG')
-                    the_build = bamboo.execute_build(
-                        plan_key=plan.json().get('key'))
-                    click.echo(click.style('Build execution status: {}'.format(
-                        the_build.status_code), fg='green'))
-                    if the_build.status_code == 200:
-                        click.echo(click.style("Build key: {}".format(
-                            the_build.json().get("buildResultKey")), fg='green'))
-                        click.echo(
-                            click.style(the_build.json().get("link", {}).get('href'), fg='green'))
+                    if action == 'build':
+                        plan = bamboo.get_plan('CMS-SITCWPNEG')
+                        the_build = bamboo.execute_build(
+                            plan_key=plan.json().get('key'))
+                        click.echo(click.style('Build execution status: {}'.format(
+                            the_build.status_code), fg='green'))
+                        if the_build.status_code == 200:
+                            click.echo(click.style("Build key: {}".format(
+                                the_build.json().get("buildResultKey")), fg='green'))
+                            click.echo(
+                                click.style(the_build.json().get("link", {}).get('href'), fg='green'))
+                        else:
+                            click.echo(click.style("Execution failed!", fg='red'))
+                            click.echo(click.style(
+                                the_build.json().get("message"), fg='red'))
+                    elif action == 'deploy':
                         res = requests.get(
                             'https://bamboo-qa.cwc-apps.com/rest/api/latest/deploy/project/all', auth=(self._credentials.get("atlassian")["user"], self._credentials.get("atlassian")["pass"]))
                         resDep = requests.get(
@@ -117,12 +122,8 @@ class Roboto(object):
                                             'https://bamboo-qa.cwc-apps.com/rest/api/latest/queue/deployment/?environmentId={}&versionId={}'.format(env['id'], job.json()['id']),
                                             auth=(self._credentials.get("atlassian")["user"], self._credentials.get("atlassian")["pass"]),
                                             headers={"Accepts": "application/json"})
+                                        print(releaseJob.text)
                                         click.echo(click.style("ENVIRONMENT RELEASED: {}".format(env['name']), fg='green'))
-                    else:
-                        click.echo(click.style("Execution failed!", fg='red'))
-                        click.echo(click.style(
-                            the_build.json().get("message"), fg='red'))
-
             if clone:
                 click.echo(click.style('Cloning %s' % (clone), fg='green'))
                 if clone == "panama":
@@ -145,6 +146,12 @@ class Roboto(object):
                 elif clone == "trinidad":
                     url = self._repos.get("flow")[clone]
                     path = "%s/sites/flowbusiness.co.trinidad-and-tobago" % (
+                        self._cloneDirs.get("flow"))
+                    click.echo(click.style('clone url %s' % (url), fg='green'))
+                    self.gitClone(url, path)
+                elif clone == "jamaica":
+                    url = self._repos.get("flow")[clone]
+                    path = "%s/sites/flowbusiness.co.jamaica" % (
                         self._cloneDirs.get("flow"))
                     click.echo(click.style('clone url %s' % (url), fg='green'))
                     self.gitClone(url, path)
@@ -189,6 +196,10 @@ class Roboto(object):
                     self.sqlExport("d_", "cwcbusin_wp")
                 elif sqlexport == "trinidad":
                     self.sqlExport("e_", "flowbusiness_tt")
+                elif sqlexport == "bb":
+                    self.sqlExport("b_", "flowbusiness_bb")
+                elif sqlexport == "jamaica":
+                    self.sqlExport("h_", "flowbusiness_jm")
             if media:
                 if media == "panama":
                     if path is None:
@@ -197,8 +208,7 @@ class Roboto(object):
                     print(path)
                     self.downloadDir(
                         "/var/www/html/flowbusiness.co/sites/negocios.masmovilpanama.com",
-                        os.path.join(self._cloneDirs.get("flow"),
-                                     "sites", "negocios.masmovilpanama.com"),
+                        os.path.join(self._cloneDirs.get("flow"), "sites", "negocios.masmovilpanama.com"),
                         "10.255.229.14",
                         path
                     )
@@ -210,9 +220,18 @@ class Roboto(object):
                         "flow"), "sites", "flowbusiness.co.trinidad-and-tobago"))
                     self.downloadDir(
                         "/var/www/html/flowbusiness.co/sites/flowbusiness.co.trinidad-and-tobago",
-                        os.path.join(self._cloneDirs.get(
-                            "flow"), "sites", "flowbusiness.co.trinidad-and-tobago"),
-                        "10.255.229.14",
+                        os.path.join(self._cloneDirs.get("flow"), "sites", "flowbusiness.co.trinidad-and-tobago"), "10.255.229.14",
+                        path
+                    )
+                elif media == "jamaica":
+                    if path is None:
+                        path = "files"
+                    print("ptah", path)
+                    print(os.path.join(self._cloneDirs.get(
+                        "flow"), "sites", "flowbusiness.co.jamaica"))
+                    self.downloadDir(
+                        "/var/www/html/flowbusiness.co/sites/flowbusiness.co.jamaica",
+                        os.path.join(self._cloneDirs.get("flow"), "sites", "flowbusiness.co.jamaica"), "10.255.229.14",
                         path
                     )
                 elif media == "bus":
@@ -239,6 +258,11 @@ class Roboto(object):
                         "flow"), "sites", "flowbusiness.co.trinidad-and-tobago", "settings.php"))
                     shutil.copy("./drupal-source/services.yml", os.path.join(self._cloneDirs.get(
                         "flow"), "sites", "flowbusiness.co.trinidad-and-tobago", "services.yml"))
+                elif copy == "jamaica":
+                    shutil.copy("./drupal-source/%s/settings.php" % (copy), os.path.join(self._cloneDirs.get(
+                        "flow"), "sites", "flowbusiness.co.jamaica", "settings.php"))
+                    shutil.copy("./drupal-source/services.yml", os.path.join(self._cloneDirs.get(
+                        "flow"), "sites", "flowbusiness.co.jamaica", "services.yml"))
                 elif copy == "bus":
                     shutil.copy("./wp-source/business/.htaccess",
                                 os.path.join(self._cloneDirs.get("bus"), ".htaccess"))
@@ -258,6 +282,10 @@ class Roboto(object):
                 elif flush == "trinidad":
                     subprocess.run(["docker-compose", "-f", "../soho_docker/php/docker-compose.yaml", "run", "--rm",
                                     "cw-php", "vendor/bin/drush", "--uri=flowbusiness.co.trinidad-and-tobago", "cache-rebuild", "-vvv"])
+                    click.echo(click.style('Done Flush in panama', fg='green'))
+                elif flush == "jamaica":
+                    subprocess.run(["docker-compose", "-f", "../soho_docker/php/docker-compose.yaml", "run", "--rm",
+                                    "cw-php", "vendor/bin/drush", "--uri=flowbusiness.co.jamaica", "cache-rebuild", "-vvv"])
                     click.echo(click.style('Done Flush in panama', fg='green'))
                 elif flush == "install":
                     subprocess.run(["docker-compose", "-f", "../soho_docker/php/docker-compose.yaml",
@@ -358,12 +386,23 @@ class Roboto(object):
 @ click.option('-d', '--dock', "dock", type=str)
 @ click.option('-m', '--media', "media", type=str)
 @ click.option('-p', '--path', "path", type=str)
+@ click.option('-p', '--action', "action", type=str)
 @ click.option('-sqli', '--sqlimport', "sqlimport", type=str)
 @ click.option('-cp', '--copy', "copy", type=str)
 @ click.option('-sqle', '--sqlexport', "sqlexport", type=str)
 @ click.option('-f', '--flush', "flush", type=str)
 @ click.option('-b', '--bam', "bam", type=str)
 @ click.pass_context
-def cli(ctx, clone, dock, media, sqlimport, copy, sqlexport, flush, path, bam):
-    ctx.obj = Roboto(clone=clone, dock=dock, media=media, copy=copy,
-                     sqlexport=sqlexport, flush=flush, sqlimport=sqlimport, path=path, bam=bam)
+def cli(ctx, clone, dock, media, sqlimport, copy, sqlexport, flush, path, bam, action):
+    ctx.obj = Roboto(
+        clone=clone,
+        dock=dock,
+        media=media,
+        copy=copy,
+        sqlexport=sqlexport,
+        flush=flush,
+        sqlimport=sqlimport,
+        path=path,
+        bam=bam,
+        action=action
+    )
