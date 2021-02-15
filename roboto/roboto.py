@@ -69,6 +69,7 @@ class Roboto(object):
                     "bb": "http://%s:%s@bssstash.corp-it.cc:7990/scm/fb/sites_flowbusiness_bb.git" % (self._credentials.get("git")["user"], self._credentials.get("git")["pass"]),
                     "panama": "http://%s:%s@bssstash.corp-it.cc:7990/scm/fb/sites_masmovilpanama_negocios.git" % (self._credentials.get("git")["user"], self._credentials.get("git")["pass"]),
                     "trinidad": "http://%s:%s@bssstash.corp-it.cc:7990/scm/fb/sites_flowbusiness_tt.git" % (self._credentials.get("git")["user"], self._credentials.get("git")["pass"]),
+                    "jamaica": "http://%s:%s@bssstash.corp-it.cc:7990/scm/fb/sites_flowbusiness_jm.git" % (self._credentials.get("git")["user"], self._credentials.get("git")["pass"])
                 },
                 "cw": {
                     "net": "http://%s:%s@bssstash.corp-it.cc:7990/scm/cwnet/core.git" % (self._credentials.get("git")["user"], self._credentials.get("git")["pass"]),
@@ -168,18 +169,18 @@ class Roboto(object):
             if dock:
                 if dock == "php":
                     subprocess.run(
-                        ["docker-compose", "-f", "../soho_docker/php/docker-compose.yaml", "up", "-d", "--build"])
+                        ["docker-compose", "-f", "../liberty_docker/php/docker-compose.yaml", "up", "-d", "--build"])
                     click.echo(click.style('Done Docker', fg='green'))
                 elif dock == "mysql":
                     subprocess.run(
-                        ["docker-compose", "-f", "../soho_docker/mysql/docker-compose.yaml", "up", "-d", "--build"])
+                        ["docker-compose", "-f", "../liberty_docker/mysql/docker-compose.yaml", "up", "-d", "--build"])
                     click.echo(click.style('Done Docker', fg='green'))
                 elif dock == "apache":
                     subprocess.run(
-                        ["docker-compose", "-f", "../soho_docker/apache/docker-compose.yaml", "up", "-d", "--build"])
+                        ["docker-compose", "-f", "../liberty_docker/apache/docker-compose.yaml", "up", "-d", "--build"])
                     click.echo(click.style('Done Docker', fg='green'))
                 elif dock == "composer":
-                    subprocess.run(["docker-compose", "-f", "../soho_docker/php/docker-compose.yaml",
+                    subprocess.run(["docker-compose", "-f", "../liberty_docker/php/docker-compose.yaml",
                                     "run", "--rm", "cw-php", "composer", "install"])
                     click.echo(click.style('Done Docker', fg='green'))
             if sqlimport:
@@ -275,20 +276,20 @@ class Roboto(object):
                                 os.path.join(self._cloneDirs.get("cwnet"), "wp-config.php"))
             if flush:
                 if flush == "panama":
-                    # docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php vendor/bin/drush --uri=flowpanama.com  cache-rebuild -vvv
-                    subprocess.run(["docker-compose", "-f", "../soho_docker/php/docker-compose.yaml", "run",
+                    # docker-compose -f ../liberty_docker/php/docker-compose.yaml run --rm  cw-php vendor/bin/drush --uri=flowpanama.com  cache-rebuild -vvv
+                    subprocess.run(["docker-compose", "-f", "../liberty_docker/php/docker-compose.yaml", "run",
                                     "--rm", "cw-php", "vendor/bin/drush", "--uri=flowpanama.com", "cache-rebuild", "-vvv"])
                     click.echo(click.style('Done Flush in panama', fg='green'))
                 elif flush == "trinidad":
-                    subprocess.run(["docker-compose", "-f", "../soho_docker/php/docker-compose.yaml", "run", "--rm",
+                    subprocess.run(["docker-compose", "-f", "../liberty_docker/php/docker-compose.yaml", "run", "--rm",
                                     "cw-php", "vendor/bin/drush", "--uri=flowbusiness.co.trinidad-and-tobago", "cache-rebuild", "-vvv"])
                     click.echo(click.style('Done Flush in panama', fg='green'))
                 elif flush == "jamaica":
-                    subprocess.run(["docker-compose", "-f", "../soho_docker/php/docker-compose.yaml", "run", "--rm",
+                    subprocess.run(["docker-compose", "-f", "../liberty_docker/php/docker-compose.yaml", "run", "--rm",
                                     "cw-php", "vendor/bin/drush", "--uri=flowbusiness.co.jamaica", "cache-rebuild", "-vvv"])
                     click.echo(click.style('Done Flush in panama', fg='green'))
                 elif flush == "install":
-                    subprocess.run(["docker-compose", "-f", "../soho_docker/php/docker-compose.yaml",
+                    subprocess.run(["docker-compose", "-f", "../liberty_docker/php/docker-compose.yaml",
                                     "run", "--rm", "cw-php", "composer require drush/drush"])
                     click.echo(click.style('Done Flush in panama', fg='green'))
         else:
@@ -304,7 +305,7 @@ class Roboto(object):
         click.echo(click.style('Done cloning !', fg='green'))
 
     def sqlImport(self, prefix, db):
-        subprocess.run(["cat", "../soho_docker/mysql/dump/{prefix}{db}.sql".format(prefix=prefix, db=db), "|", "docker",
+        subprocess.run(["cat", "../liberty_docker/mysql/dump/{prefix}{db}.sql".format(prefix=prefix, db=db), "|", "docker",
                         "exec", "-i", "cw-mysql", "/usr/bin/mysql", "-u", "root", "--password=root", "{db}".format(db=db)])
         click.echo(click.style('Done Importing', fg='green'))
 
@@ -312,7 +313,7 @@ class Roboto(object):
         sql = subprocess.run(["docker", "exec", "-i", "cw-mysql", "mysqldump", "-uroot",
                               "-proot", "--databases", "{db}".format(db=db)], stdout=subprocess.PIPE)
         sys.stdout = open(
-            "../soho_docker/mysql/dump/{prefix}{db}.sql".format(prefix=prefix, db=db), 'wb')
+            "../liberty_docker/mysql/dump/{prefix}{db}.sql".format(prefix=prefix, db=db), 'wb')
         sys.stdout.write(sql.stdout)
         sys.stdout.close()
         # click.echo(click.style('Done Exporting', fg='green'))

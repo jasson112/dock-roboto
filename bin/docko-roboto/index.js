@@ -346,7 +346,7 @@ class DockoRoboto {
             },
           },
         },
-      }).then(function (repository) {});
+      }).then(function (repository) { });
     })();
   }
 
@@ -527,7 +527,7 @@ class DockoRoboto {
             },
           },
         },
-      }).then(function (repository) {});
+      }).then(function (repository) { });
     })();
   }
 
@@ -707,7 +707,7 @@ class DockoRoboto {
   doPHP(callback) {
     spinner.text = `- Running PHP Container <(￣︶￣)>`;
     exec(
-      "docker-compose -f ../soho_docker/php/docker-compose.yaml up -d --build",
+      "docker-compose -f ../liberty_docker/php/docker-compose.yaml up -d --build",
       (error, stdout, stderr) => {
         if (error) {
           spinner.fail(`error: ${error.message}`);
@@ -721,7 +721,7 @@ class DockoRoboto {
   doMysql() {
     console.log(`- Running Mysql Container (￣ω￣)`);
     exec(
-      "docker-compose -f ../soho_docker/mysql/docker-compose.yaml up -d --build",
+      "docker-compose -f ../liberty_docker/mysql/docker-compose.yaml up -d --build",
       (error, stdout, stderr) => {
         if (error) {
           console.log(`error: ${error.message}`);
@@ -737,11 +737,11 @@ class DockoRoboto {
     //cat backup.sql | docker exec -i CONTAINER /usr/bin/mysql -u root --password=root DATABASE
     exec(
       "docker exec -i cw-mysql mysqldump -uroot -proot --databases " +
-        db +
-        " > ../soho_docker/mysql/dump/" +
-        prefix +
-        db +
-        ".sql",
+      db +
+      " > ../liberty_docker/mysql/dump/" +
+      prefix +
+      db +
+      ".sql",
       (error, stdout, stderr) => {
         if (error) {
           spinner.fail(`error: ${error.message}`);
@@ -757,11 +757,11 @@ class DockoRoboto {
     //IMPORT
     //cat backup.sql | docker exec -i CONTAINER /usr/bin/mysql -u root --password=root DATABASE
     exec(
-      "cat ../soho_docker/mysql/dump/" +
-        prefix +
-        db +
-        ".sql | docker exec -i cw-mysql /usr/bin/mysql -u root --password=root " +
-        db,
+      "cat ../liberty_docker/mysql/dump/" +
+      prefix +
+      db +
+      ".sql | docker exec -i cw-mysql /usr/bin/mysql -u root --password=root " +
+      db,
       (error, stdout, stderr) => {
         if (error) {
           spinner.fail(`error: ${error.message}`);
@@ -775,7 +775,7 @@ class DockoRoboto {
   doWeb(callback) {
     spinner.info(`- Running Web Container <(￣︶￣)>`);
     exec(
-      "docker-compose -f ../soho_docker/apache/docker-compose.yaml up -d --build",
+      "docker-compose -f ../liberty_docker/apache/docker-compose.yaml up -d --build",
       (error, stdout, stderr) => {
         if (error) {
           spinner.fail(`error: ${error.message}`);
@@ -792,8 +792,8 @@ class DockoRoboto {
     );
     exec(
       //flowbusiness_co/sites/negocios.masmovilpanama.com/themes/custom/masmovil
-      //docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php php composer.phar install -d sites/negocios.masmovilpanama.com/themes/custom/masmovil/pattern-lab
-      "docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php php composer.phar install",
+      //docker-compose -f ../liberty_docker/php/docker-compose.yaml run --rm  cw-php php composer.phar install -d sites/negocios.masmovilpanama.com/themes/custom/masmovil/pattern-lab
+      "docker-compose -f ../liberty_docker/php/docker-compose.yaml run --rm  cw-php php composer.phar install",
       (error, stdout, stderr) => {
         if (error) {
           console.log(`error: ${error.message}`);
@@ -812,8 +812,8 @@ class DockoRoboto {
     );
     exec(
       //flowbusiness_co/sites/negocios.masmovilpanama.com/themes/custom/masmovil
-      //docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php php composer.phar install -d sites/negocios.masmovilpanama.com/themes/custom/masmovil/pattern-lab
-      "docker-compose -f ../soho_docker/php/docker-compose.yaml run --rm  cw-php vendor/bin/drush --uri=flowpanama.com  cache-rebuild -vvv",
+      //docker-compose -f ../liberty_docker/php/docker-compose.yaml run --rm  cw-php php composer.phar install -d sites/negocios.masmovilpanama.com/themes/custom/masmovil/pattern-lab
+      "docker-compose -f ../liberty_docker/php/docker-compose.yaml run --rm  cw-php vendor/bin/drush --uri=flowpanama.com  cache-rebuild -vvv",
       (error, stdout, stderr) => {
         if (error) {
           console.log(`error: ${error.message}`);
