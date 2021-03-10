@@ -1,3 +1,5 @@
+import yaml
+from pyngrok import ngrok
 from atlassian import Bamboo
 import sys
 from io import BytesIO
@@ -41,6 +43,9 @@ class Roboto(object):
             "user": None,
             "pass": None,
             "url": "https://bamboo-qa.cwc-apps.com/"
+        },
+        "rok": {
+            "api": None
         }
     }
     _cloneDirs = {
@@ -49,7 +54,7 @@ class Roboto(object):
         "bus": "./cwbusiness.com",
     }
 
-    def __init__(self, clone=None, dock=None, media=None, sqlimport=None, copy=None, sqlexport=None, flush=None, path=None, bam=None, action=None):
+    def __init__(self, clone=None, dock=None, media=None, sqlimport=None, copy=None, sqlexport=None, flush=None, path=None, bam=None, action=None, rok=None):
         for i in range(0, 101):
             if i % self._progressEveryPercent == 0:
                 self._progressDict[str(i)] = ""
@@ -60,6 +65,7 @@ class Roboto(object):
             self._credentials.get("atlassian")[
                 "pass"] = os.getenv("ATLASSIAN_PASS")
             self._credentials.get("git")["user"] = os.getenv("GIT_USER")
+            self._credentials.get("rok")["api"] = os.getenv("ROK_API")
             self._credentials.get("git")["pass"] = os.getenv("GIT_PASS")
             self._credentials.get("ssh")["user"] = os.getenv("SSH_USER")
             self._credentials.get("ssh")["pass"] = os.getenv("SSH_PASS")
@@ -245,6 +251,41 @@ class Roboto(object):
                         "10.255.229.17",
                         path
                     )
+            if rok:
+                if rok != None:
+                    ngrok.set_auth_token(self._credentials.get("rok")["api"])
+                    http_tunnel = ngrok.connect()
+                    ngrok_process = ngrok.get_ngrok_process()
+                    try:
+                        # Block until CTRL-C or some other terminating event
+                        click.echo(click.style('Summoning server !', fg='yellow'))
+                        tunnels = ngrok.get_tunnels()
+                        with open(r'./drupal-source/sites.yml', encoding="utf-8") as file:
+                            data = yaml.load(file, Loader=yaml.FullLoader)
+                        f = open("./flowbusiness_co/sites/sites.php", "w")
+                        f.write("<?php\n")
+                        f.write("$sites = array(\n")
+                        for key in data["sites"]:
+                            f.write("'{}' => '{}',\n".format(key, data["sites"][key]))
+                        route = None
+                        if rok == "panama":
+                            route = "negocios.masmovilpanama.com"
+                        elif rok == "trinidad":
+                            route = "flowbusiness.co.trinidad-and-tobago"
+                        elif rok == "jamaica":
+                            route = "flowbusiness.co.jamaica"
+                        elif rok == "barbados":
+                            route = "flowbusiness.co.barbados"
+                        if route != None:
+                            f.write("'{}' => '{}',\n".format(tunnels[0].public_url.replace("https://", ""), route))
+                        f.write(");\n")
+                        f.close()
+                        click.echo(click.style('Ready to rock !', blink=True, fg='green'))
+                        click.echo(click.style('Live on: {}'.format(tunnels[0].public_url), fg='green'))
+                        ngrok_process.proc.wait()
+                    except KeyboardInterrupt:
+                        click.echo(click.style('Server KILLED !', fg='red'))
+                        ngrok.kill()
             if copy:
                 if copy == "sites":
                     shutil.copy("./drupal-source/sites.php", os.path.join(
@@ -264,6 +305,11 @@ class Roboto(object):
                         "flow"), "sites", "flowbusiness.co.jamaica", "settings.php"))
                     shutil.copy("./drupal-source/services.yml", os.path.join(self._cloneDirs.get(
                         "flow"), "sites", "flowbusiness.co.jamaica", "services.yml"))
+                elif copy == "barbados":
+                    shutil.copy("./drupal-source/%s/settings.php" % (copy), os.path.join(self._cloneDirs.get(
+                        "flow"), "sites", "flowbusiness.co.barbados", "settings.php"))
+                    shutil.copy("./drupal-source/services.yml", os.path.join(self._cloneDirs.get(
+                        "flow"), "sites", "flowbusiness.co.barbados", "services.yml"))
                 elif copy == "bus":
                     shutil.copy("./wp-source/business/.htaccess",
                                 os.path.join(self._cloneDirs.get("bus"), ".htaccess"))
@@ -275,6 +321,7 @@ class Roboto(object):
                     shutil.copy("./wp-source/net/wp-config.php",
                                 os.path.join(self._cloneDirs.get("cwnet"), "wp-config.php"))
             if flush:
+                print('flush')
                 if flush == "panama":
                     # docker-compose -f ../liberty_docker/php/docker-compose.yaml run --rm  cw-php vendor/bin/drush --uri=flowpanama.com  cache-rebuild -vvv
                     subprocess.run(["docker-compose", "-f", "../liberty_docker/php/docker-compose.yaml", "run",
@@ -283,6 +330,10 @@ class Roboto(object):
                 elif flush == "trinidad":
                     subprocess.run(["docker-compose", "-f", "../liberty_docker/php/docker-compose.yaml", "run", "--rm",
                                     "cw-php", "vendor/bin/drush", "--uri=flowbusiness.co.trinidad-and-tobago", "cache-rebuild", "-vvv"])
+                    click.echo(click.style('Done Flush in panama', fg='green'))
+                elif flush == "barbados":
+                    subprocess.run(["docker-compose", "-f", "../liberty_docker/php/docker-compose.yaml", "run", "--rm",
+                                    "cw-php", "vendor/bin/drush", "--uri=flowbusiness.co.barbados", "cache-rebuild", "-vvv"])
                     click.echo(click.style('Done Flush in panama', fg='green'))
                 elif flush == "jamaica":
                     subprocess.run(["docker-compose", "-f", "../liberty_docker/php/docker-compose.yaml", "run", "--rm",
@@ -393,8 +444,9 @@ class Roboto(object):
 @ click.option('-sqle', '--sqlexport', "sqlexport", type=str)
 @ click.option('-f', '--flush', "flush", type=str)
 @ click.option('-b', '--bam', "bam", type=str)
+@ click.option('-r', '--rok', "rok", type=str)
 @ click.pass_context
-def cli(ctx, clone, dock, media, sqlimport, copy, sqlexport, flush, path, bam, action):
+def cli(ctx, clone, dock, media, sqlimport, copy, sqlexport, flush, path, bam, action, rok):
     ctx.obj = Roboto(
         clone=clone,
         dock=dock,
@@ -405,5 +457,6 @@ def cli(ctx, clone, dock, media, sqlimport, copy, sqlexport, flush, path, bam, a
         sqlimport=sqlimport,
         path=path,
         bam=bam,
-        action=action
+        action=action,
+        rok=rok
     )

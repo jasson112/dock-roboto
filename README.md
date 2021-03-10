@@ -6,6 +6,10 @@
 - Yarn
 - Docker desktop with sared drive in location on the this repo is cloned
 
+# ROBOT COMMANDS
+
+roboto --clone=main
+
 # USAGE PY
 
 1. creating virtual environment
@@ -13,11 +17,13 @@
    ```
    python3 -m venv venv/
    ```
+
 2. activating virtual environment
 
    ```
    source venv/bin/activate
    ```
+
 3. install dependencies
 
    ```
@@ -29,7 +35,6 @@
    ```
    pip install --editable ./roboto
    ```
-
 
 # USAGE
 
