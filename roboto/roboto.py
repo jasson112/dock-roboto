@@ -1,3 +1,4 @@
+import re
 import yaml
 from pyngrok import ngrok
 from atlassian import Bamboo
@@ -39,6 +40,10 @@ class Roboto(object):
             "user": None,
             "pass": None
         },
+        "git_bucket": {
+            "user": None,
+            "pass": None
+        },
         "atlassian": {
             "user": None,
             "pass": None,
@@ -49,6 +54,7 @@ class Roboto(object):
         }
     }
     _cloneDirs = {
+        "flowb": "./flow-business",
         "flow": "./flowbusiness_co",
         "cwnet": "./cwnetworks.com",
         "bus": "./cwbusiness.com",
@@ -64,9 +70,11 @@ class Roboto(object):
                 "user"] = os.getenv("ATLASSIAN_USER")
             self._credentials.get("atlassian")[
                 "pass"] = os.getenv("ATLASSIAN_PASS")
-            self._credentials.get("git")["user"] = os.getenv("GIT_USER")
             self._credentials.get("rok")["api"] = os.getenv("ROK_API")
+            self._credentials.get("git")["user"] = os.getenv("GIT_USER")
             self._credentials.get("git")["pass"] = os.getenv("GIT_PASS")
+            self._credentials.get("git_bucket")["user"] = os.getenv("GIT_BUCKET_USER")
+            self._credentials.get("git_bucket")["pass"] = os.getenv("GIT_BUCKET_PASS")
             self._credentials.get("ssh")["user"] = os.getenv("SSH_USER")
             self._credentials.get("ssh")["pass"] = os.getenv("SSH_PASS")
             self._repos = {
@@ -75,7 +83,8 @@ class Roboto(object):
                     "bb": "http://%s:%s@bssstash.corp-it.cc:7990/scm/fb/sites_flowbusiness_bb.git" % (self._credentials.get("git")["user"], self._credentials.get("git")["pass"]),
                     "panama": "http://%s:%s@bssstash.corp-it.cc:7990/scm/fb/sites_masmovilpanama_negocios.git" % (self._credentials.get("git")["user"], self._credentials.get("git")["pass"]),
                     "trinidad": "http://%s:%s@bssstash.corp-it.cc:7990/scm/fb/sites_flowbusiness_tt.git" % (self._credentials.get("git")["user"], self._credentials.get("git")["pass"]),
-                    "jamaica": "http://%s:%s@bssstash.corp-it.cc:7990/scm/fb/sites_flowbusiness_jm.git" % (self._credentials.get("git")["user"], self._credentials.get("git")["pass"])
+                    "jamaica": "http://%s:%s@bssstash.corp-it.cc:7990/scm/fb/sites_flowbusiness_jm.git" % (self._credentials.get("git")["user"], self._credentials.get("git")["pass"]),
+                    "flow": "https://%s:%s@bitbucket.cwc-apps.com/scm/fb/flow-business.git" % (self._credentials.get("git_bucket")["user"], self._credentials.get("git_bucket")["pass"])
                 },
                 "cw": {
                     "net": "http://%s:%s@bssstash.corp-it.cc:7990/scm/cwnet/core.git" % (self._credentials.get("git")["user"], self._credentials.get("git")["pass"]),
@@ -169,7 +178,12 @@ class Roboto(object):
                     self.gitClone(url, path)
                 elif clone == "bus":
                     url = self._repos.get("cw")[clone]
-                    path = "%s" % (self._cloneDirs.get("bus"))
+                    path = "%s" % (self._cloneDirs.get("flow"))
+                    click.echo(click.style('clone url %s' % (url), fg='green'))
+                    self.gitClone(url, path)
+                elif clone == "flow":
+                    url = self._repos.get("flow")[clone]
+                    path = "%s" % (self._cloneDirs.get("flowb"))
                     click.echo(click.style('clone url %s' % (url), fg='green'))
                     self.gitClone(url, path)
             if dock:
@@ -192,6 +206,8 @@ class Roboto(object):
             if sqlimport:
                 if sqlimport == "panama":
                     self.sqlImport("c_", "negocios_masmovilpanama_com")
+                if sqlimport == "flow":
+                    self.sqlImport("f_", "flowbusiness_co")
                 elif sqlimport == "trinidad":
                     self.sqlImport("e_", "flowbusiness_tt")
                 elif sqlimport == "bus":
@@ -262,7 +278,7 @@ class Roboto(object):
                         tunnels = ngrok.get_tunnels()
                         with open(r'./drupal-source/sites.yml', encoding="utf-8") as file:
                             data = yaml.load(file, Loader=yaml.FullLoader)
-                        f = open("./flowbusiness_co/sites/sites.php", "w")
+                        f = open("./flow-business/sites/sites.php", "w")
                         f.write("<?php\n")
                         f.write("$sites = array(\n")
                         for key in data["sites"]:
@@ -287,29 +303,29 @@ class Roboto(object):
                         click.echo(click.style('Server KILLED !', fg='red'))
                         ngrok.kill()
             if copy:
+                flowDir = self._cloneDirs.get("flowb")
                 if copy == "sites":
-                    shutil.copy("./drupal-source/sites.php", os.path.join(
-                        self._cloneDirs.get("flow"), "sites", "sites.php"))
+                    with open(r'./drupal-source/sites.yml', encoding="utf-8") as file:
+                        data = yaml.load(file, Loader=yaml.FullLoader)
+                    f = open("./flow-business/web/sites/sites.php", "w")
+                    f.write("<?php\n")
+                    f.write("$sites = array(\n")
+                    for key in data["sites"]:
+                        f.write("'{}' => '{}',\n".format(key, data["sites"][key]))
+                    f.write(");\n")
+                    f.close()
                 elif copy == "panama":
-                    shutil.copy("./drupal-source/%s/settings.php" % (copy), os.path.join(
-                        self._cloneDirs.get("flow"), "sites", "negocios.masmovilpanama.com", "settings.php"))
-                    shutil.copy("./drupal-source/services.yml", os.path.join(self._cloneDirs.get(
-                        "flow"), "sites", "negocios.masmovilpanama.com", "services.yml"))
+                    # shutil.copy("./drupal-source/%s/settings.php" % (copy), os.path.join(flowDir, "web", "sites", "negocios.masmovilpanama.com", "settings.php"))
+                    shutil.copy("./drupal-source/services.yml", os.path.join(flowDir, "web", "sites", "negocios.masmovilpanama.com", "services.yml"))
                 elif copy == "trinidad":
-                    shutil.copy("./drupal-source/%s/settings.php" % (copy), os.path.join(self._cloneDirs.get(
-                        "flow"), "sites", "flowbusiness.co.trinidad-and-tobago", "settings.php"))
-                    shutil.copy("./drupal-source/services.yml", os.path.join(self._cloneDirs.get(
-                        "flow"), "sites", "flowbusiness.co.trinidad-and-tobago", "services.yml"))
+                    # shutil.copy("./drupal-source/%s/settings.php" % (copy), os.path.join(flowDir, "web", "sites", "flowbusiness.co.trinidad-and-tobago", "settings.php"))
+                    shutil.copy("./drupal-source/services.yml", os.path.join(flowDir, "web", "sites", "flowbusiness.co.trinidad-and-tobago", "services.yml"))
                 elif copy == "jamaica":
-                    shutil.copy("./drupal-source/%s/settings.php" % (copy), os.path.join(self._cloneDirs.get(
-                        "flow"), "sites", "flowbusiness.co.jamaica", "settings.php"))
-                    shutil.copy("./drupal-source/services.yml", os.path.join(self._cloneDirs.get(
-                        "flow"), "sites", "flowbusiness.co.jamaica", "services.yml"))
+                    # shutil.copy("./drupal-source/%s/settings.php" % (copy), os.path.join(flowDir, "sites", "flowbusiness.co.jamaica", "settings.php"))
+                    shutil.copy("./drupal-source/services.yml", os.path.join(flowDir, "web", "sites", "flowbusiness.co.jamaica", "services.yml"))
                 elif copy == "barbados":
-                    shutil.copy("./drupal-source/%s/settings.php" % (copy), os.path.join(self._cloneDirs.get(
-                        "flow"), "sites", "flowbusiness.co.barbados", "settings.php"))
-                    shutil.copy("./drupal-source/services.yml", os.path.join(self._cloneDirs.get(
-                        "flow"), "sites", "flowbusiness.co.barbados", "services.yml"))
+                    # shutil.copy("./drupal-source/%s/settings.php" % (copy), os.path.join(flowDir, "web", "sites", "flowbusiness.co.barbados", "settings.php"))
+                    shutil.copy("./drupal-source/services.yml", os.path.join(flowDir, "web", "sites", "flowbusiness.co.barbados", "services.yml"))
                 elif copy == "bus":
                     shutil.copy("./wp-source/business/.htaccess",
                                 os.path.join(self._cloneDirs.get("bus"), ".htaccess"))
@@ -356,8 +372,8 @@ class Roboto(object):
         click.echo(click.style('Done cloning !', fg='green'))
 
     def sqlImport(self, prefix, db):
-        subprocess.run(["cat", "../liberty_docker/mysql/dump/{prefix}{db}.sql".format(prefix=prefix, db=db), "|", "docker",
-                        "exec", "-i", "cw-mysql", "/usr/bin/mysql", "-u", "root", "--password=root", "{db}".format(db=db)])
+        with open(f"../liberty_docker/mysql/dump/{prefix}{db}.sql") as input_file:
+            subprocess.run(["docker", "exec", "-i", "cw-mysql", "/usr/bin/mysql", "-u", "root", "--password=root", "{db}".format(db=db)], stdin=input_file, capture_output=True)
         click.echo(click.style('Done Importing', fg='green'))
 
     def sqlExport(self, prefix, db):

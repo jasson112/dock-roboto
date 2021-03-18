@@ -1,6 +1,10 @@
 sites:
-  "flowbb.com": "flowbusiness.co.barbados"
   #'8304838616ef.ngrok.io': 'negocios.masmovilpanama.com',
   "flowpanama.com": "negocios.masmovilpanama.com"
   "flowtrinidad.com": "flowbusiness.co.trinidad-and-tobago"
   "flowjamaica.com": "flowbusiness.co.jamaica"
+  "flow.co": "flowbusiness.co"
+  "flow.co.barbados": "flowbusiness.co.barbados"
+  "flow.co.curacao": "flowbusiness.co.curacao"
+  "flow.co.trinidad-and-tobago": "flowbusiness.co.trinidad-and-tobago"
+  "flow.co.jamaica": "flowbusiness.co.jamaica"
