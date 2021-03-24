@@ -278,7 +278,7 @@ class Roboto(object):
                         tunnels = ngrok.get_tunnels()
                         with open(r'./drupal-source/sites.yml', encoding="utf-8") as file:
                             data = yaml.load(file, Loader=yaml.FullLoader)
-                        f = open("./flow-business/sites/sites.php", "w")
+                        f = open("./flow-business/web/sites/sites.php", "w")
                         f.write("<?php\n")
                         f.write("$sites = array(\n")
                         for key in data["sites"]:
