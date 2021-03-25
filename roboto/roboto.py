@@ -206,6 +206,8 @@ class Roboto(object):
             if sqlimport:
                 if sqlimport == "panama":
                     self.sqlImport("c_", "negocios_masmovilpanama_com")
+                if sqlimport == "vlocity":
+                    self.sqlImport("g_", "masmovilpanama_velocity")
                 if sqlimport == "flow":
                     self.sqlImport("f_", "flowbusiness_co")
                 elif sqlimport == "trinidad":
@@ -215,6 +217,8 @@ class Roboto(object):
             if sqlexport:
                 if sqlexport == "panama":
                     self.sqlExport("c_", "negocios_masmovilpanama_com")
+                if sqlexport == "vlocity":
+                    self.sqlExport("g_", "masmovilpanama_velocity")
                 elif sqlexport == "bus":
                     self.sqlExport("d_", "cwcbusin_wp")
                 elif sqlexport == "trinidad":
@@ -231,7 +235,7 @@ class Roboto(object):
                     print(path)
                     self.downloadDir(
                         "/var/www/html/flowbusiness.co/sites/negocios.masmovilpanama.com",
-                        os.path.join(self._cloneDirs.get("flow"), "sites", "negocios.masmovilpanama.com"),
+                        os.path.join(self._cloneDirs.get("flowb"), "web", "sites", "negocios.masmovilpanama.com"),
                         "10.255.229.14",
                         path
                     )
@@ -243,7 +247,7 @@ class Roboto(object):
                         "flow"), "sites", "flowbusiness.co.trinidad-and-tobago"))
                     self.downloadDir(
                         "/var/www/html/flowbusiness.co/sites/flowbusiness.co.trinidad-and-tobago",
-                        os.path.join(self._cloneDirs.get("flow"), "sites", "flowbusiness.co.trinidad-and-tobago"), "10.255.229.14",
+                        os.path.join(self._cloneDirs.get("flowb"), "web", "sites", "flowbusiness.co.trinidad-and-tobago"), "10.255.229.14",
                         path
                     )
                 elif media == "jamaica":
@@ -254,7 +258,7 @@ class Roboto(object):
                         "flow"), "sites", "flowbusiness.co.jamaica"))
                     self.downloadDir(
                         "/var/www/html/flowbusiness.co/sites/flowbusiness.co.jamaica",
-                        os.path.join(self._cloneDirs.get("flow"), "sites", "flowbusiness.co.jamaica"), "10.255.229.14",
+                        os.path.join(self._cloneDirs.get("flowb"), "web", "sites", "flowbusiness.co.jamaica"), "10.255.229.14",
                         path
                     )
                 elif media == "bus":
