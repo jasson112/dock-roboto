@@ -215,11 +215,11 @@ class Roboto(object):
                 elif sqlimport == "barbados":
                     self.sqlImport("b_", "flowbusiness_bb")
                 elif sqlimport == "bus":
-                    self.sqlImport("d_", "cwcbusin_wp.sql")
+                    self.sqlImport("d_", "cwcbusin_wp")
                 elif sqlimport == "curacao":
-                    self.sqlImport("i_", "flowbusiness_cw.sql")
+                    self.sqlImport("i_", "flowbusiness_cw")
                 elif sqlimport == "init_curacao":
-                    self.sqlImport("i_a_", "init.sql")
+                    self.sqlImport("i_a_", "init")
             if sqlexport:
                 if sqlexport == "panama":
                     self.sqlExport("c_", "negocios_masmovilpanama_com")
