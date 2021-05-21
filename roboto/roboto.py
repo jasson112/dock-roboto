@@ -216,6 +216,8 @@ class Roboto(object):
                     self.sqlImport("b_", "flowbusiness_bb")
                 elif sqlimport == "bus":
                     self.sqlImport("d_", "cwcbusin_wp.sql")
+                elif sqlimport == "curacao":
+                    self.sqlImport("i_", "flowbusiness_cw.sql")
             if sqlexport:
                 if sqlexport == "panama":
                     self.sqlExport("c_", "negocios_masmovilpanama_com")
@@ -229,6 +231,8 @@ class Roboto(object):
                     self.sqlExport("b_", "flowbusiness_bb")
                 elif sqlexport == "jamaica":
                     self.sqlExport("h_", "flowbusiness_jm")
+                elif sqlexport == "curacao":
+                    self.sqlExport("i_", "flowbusiness_cw")
             if media:
                 if media == "panama":
                     if path is None:
@@ -261,6 +265,17 @@ class Roboto(object):
                     self.downloadDir(
                         "/var/www/html/flowbusiness.co/sites/flowbusiness.co.jamaica",
                         os.path.join(self._cloneDirs.get("flowb"), "web", "sites", "flowbusiness.co.jamaica"), "10.255.229.14",
+                        path
+                    )
+                elif media == "curacao":
+                    if path is None:
+                        path = "files"
+                    print("ptah", path)
+                    print(os.path.join(self._cloneDirs.get(
+                        "flow"), "sites", "flowbusiness.co.curacao"))
+                    self.downloadDir(
+                        "/var/www/html/flowbusiness.co/sites/flowbusiness.co.curacao",
+                        os.path.join(self._cloneDirs.get("flowb"), "web", "sites", "flowbusiness.co.curacao"), "10.255.229.14",
                         path
                     )
                 elif media == "bus":
@@ -365,6 +380,7 @@ class Roboto(object):
                     subprocess.run(["docker-compose", "-f", "../liberty_docker/php/docker-compose.yaml",
                                     "run", "--rm", "cw-php", "composer require drush/drush"])
                     click.echo(click.style('Done Flush in panama', fg='green'))
+
         else:
             click.echo(click.style(
                 'Environment variables not found. Check your .env file', fg='red'))
