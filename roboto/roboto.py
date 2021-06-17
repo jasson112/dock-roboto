@@ -220,6 +220,10 @@ class Roboto(object):
                     self.sqlImport("i_", "flowbusiness_cw")
                 elif sqlimport == "init_curacao":
                     self.sqlImport("i_a_", "init")
+                elif sqlimport == "eastern":
+                    self.sqlImport("j_", "flowbusiness_ec")
+                elif sqlimport == "init_eastern":
+                    self.sqlImport("j_a_", "init")
             if sqlexport:
                 if sqlexport == "panama":
                     self.sqlExport("c_", "negocios_masmovilpanama_com")
@@ -235,6 +239,8 @@ class Roboto(object):
                     self.sqlExport("h_", "flowbusiness_jm")
                 elif sqlexport == "curacao":
                     self.sqlExport("i_", "flowbusiness_cw")
+                elif sqlexport == "eastern":
+                    self.sqlExport("i_", "flowbusiness_ec")
             if media:
                 if media == "panama":
                     if path is None:
@@ -280,6 +286,19 @@ class Roboto(object):
                         os.path.join(self._cloneDirs.get("flowb"), "web", "sites", "flowbusiness.co.curacao"), "10.255.229.14",
                         path
                     )
+
+                elif media == "eastern":
+                    if path is None:
+                        path = "files"
+                    print("ptah", path)
+                    print(os.path.join(self._cloneDirs.get(
+                        "flow"), "sites", "flowbusiness.co.eastern-caribbean"))
+                    self.downloadDir(
+                        "/var/www/html/flowbusiness.co/sites/flowbusiness.co.eastern-caribbean",
+                        os.path.join(self._cloneDirs.get("flowb"), "web", "sites", "flowbusiness.co.eastern-caribbean"), "10.255.229.14",
+                        path
+                    )
+
                 elif media == "bus":
                     if path is None:
                         path = "uploads"
